@@ -17,7 +17,7 @@ class Menu:
     }
 
     HEADERS = {
-        'user': 'Username'
+        'user': 'Employee'
         'date': 'Date',
         'task_name': 'Task Name',
         'duration': 'Duration (minutes)',
