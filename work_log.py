@@ -2,7 +2,8 @@ import datetime
 import re
 
 from csv_manager import CsvManager
-
+from db_manager import DBManager
+import wl_settings as settings
 
 class Menu:
 
@@ -17,14 +18,14 @@ class Menu:
     }
 
     HEADERS = {
-        'user': 'Employee'
-        'date': 'Date',
-        'task_name': 'Task Name',
-        'duration': 'Duration (minutes)',
-        'notes': 'Notes'
+        'user': 'employee'
+        'date': 'date',
+        'task_name': 'task_name',
+        'duration': 'duration',
+        'notes': 'notes'
     }
 
-    DATASTORE_FILENAME = 'work_log.csv'
+    DATASTORE_FILENAME = settings.DATABASE_NAME
 
     # STATUS VARIABLES
     quit = False
