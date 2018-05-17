@@ -61,7 +61,7 @@ class DBManager:
         # join() defaults to inner join
         #joined = Employee.join(LogEntry)
         #query = joined.select()
-        query = Employee.select(Employee.name).join(LogEntry)
+        query = Employee.select(Employee.name).join(LogEntry).distinct()
         return [OrderedDict([('name', record.name)]) for record in query]
     
     def view_everything(self, employee=None):

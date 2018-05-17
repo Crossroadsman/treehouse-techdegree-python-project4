@@ -259,7 +259,7 @@ class Menu:
         dbm = DBManager()
         employee_names = dbm.view_employees()
         for i, value in enumerate(employee_names):
-            print("{}) {}".format(i + 1, value))
+            print("{}) {}".format(i + 1, value['name']))
         selected_employee = None
         while selected_employee is None:
             user_input = input("> ")
@@ -280,6 +280,7 @@ class Menu:
             # when an employee is selected, show all the entries with that e'ee
             matching_records = dbm.view_everything(employee=selected_employee)
         self.records = matching_records
+        print(self.records)
         self.current_record = 0
         return self.present_next_result
 
