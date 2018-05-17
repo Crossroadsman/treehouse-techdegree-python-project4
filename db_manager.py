@@ -54,6 +54,29 @@ class DBManager:
             print("detailed error information:")
             print(err)
 
+    def view_employees(self):
+        """get all employees who have made entries"""
+        # join() defaults to inner join
+        #joined = Employee.join(LogEntry)
+        #query = joined.select()
+        query = Employee.select(Employee.name).join(LogEntry)
+        for record in query:
+            print(record.name)
+    
+    def view_everything(self):
+        """get every field for every log entry"""
+        query = LogEntry.select().join(Employee)
+        print("employee | date | task_name | duration | notes")
+        for record in query:
+            string = "{} | {} | {} | {} | {}"
+            print(string.format(
+                record.employee.name,
+                record.date,
+                record.task_name,
+                record.duration,
+                record.notes
+            ))
+            
 
     def view_entries(self):
         """View previous entries"""

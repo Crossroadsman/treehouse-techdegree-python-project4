@@ -1,7 +1,7 @@
 import datetime
 import re
 
-from csv_manager import CsvManager
+#from csv_manager import CsvManager
 from db_manager import DBManager
 import wl_settings as settings
 
@@ -18,7 +18,7 @@ class Menu:
     }
 
     HEADERS = {
-        'user': 'employee'
+        'user': 'employee',
         'date': 'date',
         'task_name': 'task_name',
         'duration': 'duration',
@@ -114,15 +114,15 @@ class Menu:
             input_text = input("(Optional, leave blank for none) ")
             notes = input_text
             # call method to write data to file
-            csvm = CsvManager()
-            file_data = [{
+            dbm = DBManager()
+            file_data = {
                 self.HEADERS['user']: username,
                 self.HEADERS['date']: date_string,
                 self.HEADERS['task_name']: task_name,
                 self.HEADERS['duration']: time_spent,
                 self.HEADERS['notes']: notes
-            }]
-            csvm.save_csv(file_data, self.DATASTORE_FILENAME)
+            }
+            dbm.add_entry(file_data)
             return self.main_menu
 
     def options(self):
@@ -152,6 +152,8 @@ class Menu:
         '''This is the search menu. The user selects how they want to search.
         '''
         inputs = {
+            'e': {'text': 'Employee name',
+                  'function': self.search_employee},
             'd': {'text': 'single Date',
                   'function': self.search_exact_date},
             'r': {'text': 'date Range',
@@ -283,13 +285,24 @@ class Menu:
         self.current_page_start += self.OPTIONS['entries per page']
         return self.present_results
 
+    def search_employee(self):
+        """This is the menu where the user is given a list of all employees
+        who have entries, and can select a particular employee to see
+        all their entries"""
+        print("\nSEARCH BY EMPLOYEE")
+        #load the db manager
+        dbm = DBManager()
+
+        # SELECT name FROM employee;
+        #...
+        
     def search_exact_date(self):
         '''This is the menu where the user browses dates and entries and picks
         the date from a list
         '''
         print("\nSEARCH EXACT DATE")
-        # load the csv
-        csvm = CsvManager()
+        # load the db manager
+        dbm = DBManager()
         csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
         date_records = self.get_column(csv_data,
                                        self.HEADERS['date'],
