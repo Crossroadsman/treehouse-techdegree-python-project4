@@ -34,9 +34,9 @@ class Menu:
     # MENU METHODS
     # ------------
     def main_menu(self):
-        '''This is the root menu. The user selects which activity to perform
+        """This is the root menu. The user selects which activity to perform
         and then the method returns the function for the activity.
-        '''
+        """
         inputs = {
             'a': {'text': 'Add new entry',
                   'function': self.add_entry},
@@ -60,8 +60,8 @@ class Menu:
             return inputs[user_entry]['function']
 
     def add_entry(self):
-        '''This is the menu where the user can add a task that was completed
-        '''
+        """This is the menu where the user can add a task that was completed
+        """
         while True:
             print("\nADD ENTRY")
             print("Username")
@@ -109,9 +109,9 @@ class Menu:
             return self.main_menu
 
     def options(self):
-        '''This is the menu where the user can specify user-configurable
+        """This is the menu where the user can specify user-configurable
         options
-        '''
+        """
         print('OPTIONS')
 
         print("Choose a display date format")
@@ -132,8 +132,8 @@ class Menu:
         return self.main_menu
 
     def search_entries(self):
-        '''This is the search menu. The user selects how they want to search.
-        '''
+        """This is the search menu. The user selects how they want to search.
+        """
         inputs = {
             'e': {'text': 'Employee name',
                   'function': self.search_employee},
@@ -166,9 +166,9 @@ class Menu:
         self.quit = True
 
     def present_results(self):
-        '''Show all the results from the search and then provide interaction
+        """Show all the results from the search and then provide interaction
         choices
-        '''
+        """
         inputs = {
             'n': {'text': 'Next page',
                   'function': self.next_page},
@@ -212,7 +212,7 @@ class Menu:
             return inputs[user_entry]['function']
 
     def present_next_result(self):
-        '''Show the next available result'''
+        """Show the next available result"""
         inputs = {
             'p': {'text': 'Previous',
                   'function': self.previous_result},
@@ -284,9 +284,9 @@ class Menu:
         return self.present_next_result
 
     def search_exact_date(self):
-        '''This is the menu where the user browses dates and entries and picks
+        """This is the menu where the user browses dates and entries and picks
         the date from a list
-        '''
+        """
         print("\nSEARCH EXACT DATE")
         # load the db manager
         dbm = DBManager()
@@ -323,9 +323,9 @@ class Menu:
         return self.present_next_result
 
     def search_date_range(self):
-        '''This is the menu where the user can enter a from date and to date
+        """This is the menu where the user can enter a from date and to date
         and get back every entry from within that range
-        '''
+        """
         print('SEARCH DATE RANGE')
         start_date = None
         end_date = None
@@ -375,9 +375,9 @@ class Menu:
         return self.present_next_result
 
     def search_time_spent(self):
-        '''This is the menu where the user enters the number of minutes a task
+        """This is the menu where the user enters the number of minutes a task
         took and be able to choose one to see entries from
-        '''
+        """
         print('SEARCH BY TIME SPENT')
         print("Time spent")
         time_spent = None
@@ -403,9 +403,9 @@ class Menu:
         return self.present_next_result
 
     def search_text_search(self):
-        '''This is the menu where the user enters a text string and is presented
+        """This is the menu where the user enters a text string and is presented
         with all entries containing that string in the task name or notes
-        '''
+        """
         text_headers = [
             settings.HEADERS['user'],
             settings.HEADERS['task_name'],
@@ -438,9 +438,9 @@ class Menu:
         return self.present_next_result
 
     def search_regex_search(self):
-        '''This menu is just like `search_text_search` except the user provides
+        """This menu is just like `search_text_search` except the user provides
         a regex pattern instead of a text string
-        '''
+        """
         text_headers = [
             settings.HEADERS['user'],
             settings.HEADERS['task_name'],
@@ -616,13 +616,13 @@ class Menu:
 
     # Other UI Methods
     def display_entry(self, entry, verbose=False, return_only=False):
-        '''This method displays a selected entry, showing:
+        """This method displays a selected entry, showing:
         - date (read from file in iso 8601 and displayed in whatever is set in
           options)
         - task name
         - time taken
         - any notes
-        '''
+        """
         username = entry[settings.HEADERS['user']]
         date = entry[settings.HEADERS['date']]
         task_name = entry[settings.HEADERS['task_name']]
@@ -648,34 +648,34 @@ class Menu:
                 print(short_form)
 
     def previous_result(self):
-        '''load previous result'''
+        """load previous result"""
         self.current_record -= 1
         return self.present_next_result
 
     def next_result(self):
-        '''load next result'''
+        """load next result"""
         self.current_record += 1
         return self.present_next_result
 
     def previous_page(self):
-        '''load previous page of results'''
+        """load previous page of results"""
         self.current_page_start -= self.OPTIONS['entries per page']
         return self.present_results
 
     def next_page(self):
-        '''load next page of results'''
+        """load next page of results"""
         self.current_page_start += self.OPTIONS['entries per page']
         return self.present_results
 
     # Helper Methods
     def validate_date_entry(self, date_string, date_format):
-        '''Takes a date_string and date_format and attempts to create
+        """Takes a date_string and date_format and attempts to create
         a valid datetime object with those imports.
         Returns a tuple in the form (error, datetime) where:
         - `error` is None if valid and a description of the error text if
           invalid;
         - `datetime` is a datetime object if valid and None if invalid
-        '''
+        """
         try:
             naive_datetime = datetime.datetime.strptime(
                 date_string,
@@ -706,9 +706,9 @@ class Menu:
             return (None, naive_datetime)
 
     def date_entry(self):
-        '''This helper function asks for a date input in the user's preferred
+        """This helper function asks for a date input in the user's preferred
         format and then returns that date as a naive datetime object
-        '''
+        """
         date_format = self.OPTIONS['date format']
         input_text = "Please use the '{}' date format: "
         user_entry = input(input_text.format(date_format['UI format']))
@@ -717,11 +717,11 @@ class Menu:
         return validated
 
     def date_to_string(self, date_object, target='display'):
-        '''This helper function takes a naive date object and returns a
+        """This helper function takes a naive date object and returns a
         string representation in:
         - `target='display'`: the user's preferred display format
         - `target='file': the save format
-        '''
+        """
         if target == 'display':
             option = self.OPTIONS['date format']
             string_format = option['UI format']
@@ -734,11 +734,11 @@ class Menu:
         return date_object.strftime(string_format)
 
     def get_column(self, data_set, field_title, unique=False):
-        '''takes a data set and the name of a column and returns a list of all
+        """takes a data set and the name of a column and returns a list of all
         records in that column.
 
         If unique is set to True, returns only unique values (while
-        preserving order)'''
+        preserving order)"""
         items = [row[field_title] for row in data_set]
         if not unique:
             return items
@@ -750,15 +750,15 @@ class Menu:
             return unique_items
 
     def get_matching_records(self, data_set, field_title, value):
-        '''takes a data set and the name of a column and a value and returns
+        """takes a data set and the name of a column and a value and returns
         all the rows where the specified column has the specified value
-        '''
+        """
         return [row for row in data_set if row[field_title] == value]
 
     def get_records_containing(self, data_set, field_title, value):
-        '''takes a data set, the name of a column, value and returns all
+        """takes a data set, the name of a column, value and returns all
         the rows where the specified value appears in the specified column
-        '''
+        """
         output_records = []
         if self.OPTIONS['case sensitive search']:
             for row in data_set:
@@ -772,10 +772,10 @@ class Menu:
         return output_records
 
     def get_records_with_pattern(self, data_set, field_title, pattern):
-        '''takes a data set, the name of a column, a pattern and returns
+        """takes a data set, the name of a column, a pattern and returns
         all the rows where the specified regex pattern appears in the
         specified column rows
-        '''
+        """
         def check_match(row):
             return re.search(pattern, row[field_title]) is not None
 
