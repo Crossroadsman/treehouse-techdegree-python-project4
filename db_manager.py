@@ -64,10 +64,19 @@ class DBManager:
         query = Employee.select(Employee.name).join(LogEntry)
         return [OrderedDict([('name', record.name)]) for record in query]
     
-    def view_everything(self):
-        """get every field for every log entry"""
-        query = LogEntry.select().join(Employee)
-        print("employee | date | task_name | duration | notes")
+    def view_everything(self, employee=None):
+        """get every field for every log entry
+        Can optionally specify a particular employee name to filter by that
+        employee
+        """
+        if employee is not None:
+            query = (LogEntry
+                     .select()
+                     .join(Employee)
+                     .where(employee == Employee.name)
+            )
+        else:
+            query = LogEntry.select().join(Employee)
         return self.records_to_list(query)
             
 

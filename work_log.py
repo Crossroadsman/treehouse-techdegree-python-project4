@@ -7,30 +7,18 @@ import wl_settings as settings
 
 class Menu:
 
-    # CONSTANTS
-    DATE_FORMATS = {
-        'iso 8601': {'UI format': 'yyyy-mm-dd',
-                     'datetime format': '%Y-%m-%d'},
-        'uk':       {'UI format': 'dd/mm/yyyy',
-                     'datetime format': '%d/%m/%Y'},
-        'us':       {'UI format': 'mm/dd/yyyy',
-                     'datetime format': '%m/%d/%Y'},
-    }
-
-    HEADERS = settings.HEADERS
-
-    DATASTORE_FILENAME = settings.DATABASE_NAME
-
     # STATUS VARIABLES
+    # ----------------
     quit = False
 
     # INITIALIZERS
+    # ------------
     def __init__(self):
         print("\nWORK LOG")
         print("========")
         self.OPTIONS = {
-            'date format': self.DATE_FORMATS['iso 8601'],
-            'save format (date)': self.DATE_FORMATS['iso 8601'],
+            'date format': settings.DATE_FORMATS['iso 8601'],
+            'save format (date)': settings.DATE_FORMATS['iso 8601'],
             'case sensitive search': False,
             'entries per page': 10,
             'allow future dates': False,
@@ -44,6 +32,7 @@ class Menu:
             menu = menu()
 
     # MENU METHODS
+    # ------------
     def main_menu(self):
         '''This is the root menu. The user selects which activity to perform
         and then the method returns the function for the activity.
@@ -110,11 +99,11 @@ class Menu:
             # call method to write data to file
             dbm = DBManager()
             file_data = {
-                self.HEADERS['user']: username,
-                self.HEADERS['date']: date_string,
-                self.HEADERS['task_name']: task_name,
-                self.HEADERS['duration']: time_spent,
-                self.HEADERS['notes']: notes
+                settings.HEADERS['user']: username,
+                settings.HEADERS['date']: date_string,
+                settings.HEADERS['task_name']: task_name,
+                settings.HEADERS['duration']: time_spent,
+                settings.HEADERS['notes']: notes
             }
             dbm.add_entry(file_data)
             return self.main_menu
@@ -126,7 +115,7 @@ class Menu:
         print('OPTIONS')
 
         print("Choose a display date format")
-        menu_choices = list(self.DATE_FORMATS.keys())
+        menu_choices = list(settings.DATE_FORMATS.keys())
         menu_size = len(menu_choices)
         for i in range(len(menu_choices)):
             print("({}) - {}".format(i + 1, menu_choices[i]))
@@ -135,7 +124,7 @@ class Menu:
             choice = int(input_text) - 1
             choice = menu_choices[choice]
             print("You chose: {}".format(choice))
-            self.OPTIONS['date format'] = self.DATE_FORMATS[choice]
+            self.OPTIONS['date format'] = settings.DATE_FORMATS[choice]
             print('going back to main menu')
         else:
             print("Invalid entry, returning to main menu")
@@ -259,26 +248,8 @@ class Menu:
                 continue
             return inputs[user_entry]['function']
 
-    def previous_result(self):
-        '''load previous result'''
-        self.current_record -= 1
-        return self.present_next_result
-
-    def next_result(self):
-        '''load next result'''
-        self.current_record += 1
-        return self.present_next_result
-
-    def previous_page(self):
-        '''load previous page of results'''
-        self.current_page_start -= self.OPTIONS['entries per page']
-        return self.present_results
-
-    def next_page(self):
-        '''load next page of results'''
-        self.current_page_start += self.OPTIONS['entries per page']
-        return self.present_results
-
+    # Specific Search Menus
+    # .....................
     def search_employee(self):
         """This is the menu where the user is given a list of all employees
         who have entries, and can select a particular employee to see
@@ -286,9 +257,31 @@ class Menu:
         print("\nSEARCH BY EMPLOYEE")
         #load the db manager
         dbm = DBManager()
-
-        # SELECT name FROM employee;
-        #...
+        employee_names = dbm.view_employees()
+        for i, value in enumerate(employee_names):
+            print("{}) {}".format(i + 1, value))
+        selected_employee = None
+        while selected_employee is None:
+            user_input = input("> ")
+            # perform input validation
+            try:
+                user_input = int(user_input) - 1
+            except ValueError:
+                print("Invalid value, try again")
+                continue
+            if user_input < 0:
+                print("Value out of range. Try again.")
+                continue
+            try:
+                selected_employee = employee_names[user_input]
+            except IndexError:
+                print("Value out of range. Try again.")
+                continue
+            # when an employee is selected, show all the entries with that e'ee
+            matching_records = dbm.view_everything(employee=selected_employee)
+        self.records = matching_records
+        self.current_record = 0
+        return self.present_next_result
 
     def search_exact_date(self):
         '''This is the menu where the user browses dates and entries and picks
@@ -299,7 +292,7 @@ class Menu:
         dbm = DBManager()
         csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
         date_records = self.get_column(csv_data,
-                                       self.HEADERS['date'],
+                                       settings.HEADERS['date'],
                                        unique=True)
         for i, value in enumerate(date_records):
             print("{}) {}".format(i + 1, value))
@@ -323,7 +316,7 @@ class Menu:
 
             # when a date is selected, show all the entries with that date
             matching_records = self.get_matching_records(csv_data,
-                                                         self.HEADERS['date'],
+                                                         settings.HEADERS['date'],
                                                          selected_date)
         self.records = matching_records
         self.current_record = 0
@@ -370,7 +363,7 @@ class Menu:
             #   show entries
             date_string = self.date_to_string(current_date, target='file')
             matching_records += self.get_matching_records(csv_data,
-                                                          self.HEADERS['date'],
+                                                          settings.HEADERS['date'],
                                                           date_string)
             current_date = current_date + datetime.timedelta(days=1)
 
@@ -398,7 +391,7 @@ class Menu:
         # load csv
         csvm = CsvManager()
         csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        field_title = self.HEADERS['duration']
+        field_title = settings.HEADERS['duration']
         matching_records = self.get_matching_records(csv_data,
                                                      field_title,
                                                      str(time_spent))
@@ -414,9 +407,9 @@ class Menu:
         with all entries containing that string in the task name or notes
         '''
         text_headers = [
-            self.HEADERS['user'],
-            self.HEADERS['task_name'],
-            self.HEADERS['notes']
+            settings.HEADERS['user'],
+            settings.HEADERS['task_name'],
+            settings.HEADERS['notes']
         ]
         print('SEARCH USING TEXT STRING')
         print("Enter the text string to search on")
@@ -449,9 +442,9 @@ class Menu:
         a regex pattern instead of a text string
         '''
         text_headers = [
-            self.HEADERS['user'],
-            self.HEADERS['task_name'],
-            self.HEADERS['notes']
+            settings.HEADERS['user'],
+            settings.HEADERS['task_name'],
+            settings.HEADERS['notes']
         ]
         print('SEARCH USING REGEX PATTERN')
         print("Enter the pattern to search on")
@@ -520,11 +513,11 @@ class Menu:
         # find the row that matches record
         for row in csv_data:
             if row == record:
-                row[self.HEADERS['user']] = username
-                row[self.HEADERS['date']] = date_string
-                row[self.HEADERS['task_name']] = task_name
-                row[self.HEADERS['duration']] = time_spent
-                row[self.HEADERS['notes']] = notes
+                row[settings.HEADERS['user']] = username
+                row[settings.HEADERS['date']] = date_string
+                row[settings.HEADERS['task_name']] = task_name
+                row[settings.HEADERS['duration']] = time_spent
+                row[settings.HEADERS['notes']] = notes
         # save the csv
         csvm.save_csv(csv_data, self.DATASTORE_FILENAME, truncate=True)
         return self.main_menu
@@ -568,11 +561,11 @@ class Menu:
         # find the row that matches record
         for row in csv_data:
             if row == record:
-                row[self.HEADERS['user']] = username
-                row[self.HEADERS['date']] = date_string
-                row[self.HEADERS['task_name']] = task_name
-                row[self.HEADERS['duration']] = time_spent
-                row[self.HEADERS['notes']] = notes
+                row[settings.HEADERS['user']] = username
+                row[settings.HEADERS['date']] = date_string
+                row[settings.HEADERS['task_name']] = task_name
+                row[settings.HEADERS['duration']] = time_spent
+                row[settings.HEADERS['notes']] = notes
         # save the csv
         csvm.save_csv(csv_data, self.DATASTORE_FILENAME, truncate=True)
         return self.main_menu
@@ -630,11 +623,11 @@ class Menu:
         - time taken
         - any notes
         '''
-        username = entry[self.HEADERS['user']]
-        date = entry[self.HEADERS['date']]
-        task_name = entry[self.HEADERS['task_name']]
-        time_taken = entry[self.HEADERS['duration']]
-        notes = entry[self.HEADERS['notes']]
+        username = entry[settings.HEADERS['user']]
+        date = entry[settings.HEADERS['date']]
+        task_name = entry[settings.HEADERS['task_name']]
+        time_taken = entry[settings.HEADERS['duration']]
+        notes = entry[settings.HEADERS['notes']]
         if verbose:
             line0 = username
             print(line0)
@@ -653,6 +646,26 @@ class Menu:
                 return short_form
             else:
                 print(short_form)
+
+    def previous_result(self):
+        '''load previous result'''
+        self.current_record -= 1
+        return self.present_next_result
+
+    def next_result(self):
+        '''load next result'''
+        self.current_record += 1
+        return self.present_next_result
+
+    def previous_page(self):
+        '''load previous page of results'''
+        self.current_page_start -= self.OPTIONS['entries per page']
+        return self.present_results
+
+    def next_page(self):
+        '''load next page of results'''
+        self.current_page_start += self.OPTIONS['entries per page']
+        return self.present_results
 
     # Helper Methods
     def validate_date_entry(self, date_string, date_format):
