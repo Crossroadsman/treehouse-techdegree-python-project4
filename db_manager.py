@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from collections import OrderedDict
+
 from peewee import *
 
 import wl_settings as settings
@@ -60,22 +62,13 @@ class DBManager:
         #joined = Employee.join(LogEntry)
         #query = joined.select()
         query = Employee.select(Employee.name).join(LogEntry)
-        for record in query:
-            print(record.name)
+        return [OrderedDict([('name', record.name)]) for record in query]
     
     def view_everything(self):
         """get every field for every log entry"""
         query = LogEntry.select().join(Employee)
         print("employee | date | task_name | duration | notes")
-        for record in query:
-            string = "{} | {} | {} | {} | {}"
-            print(string.format(
-                record.employee.name,
-                record.date,
-                record.task_name,
-                record.duration,
-                record.notes
-            ))
+        return self.records_to_list(query)
             
 
     def view_entries(self):
@@ -83,6 +76,26 @@ class DBManager:
 
     def delete_entry(self, entry):
         """Delete the specified entry"""
+
+    # Helper Methods
+    def record_to_dict(self, record):
+        """Takes a single record and returns an OrderedDict representing that 
+        data"""
+        return OrderedDict([
+            ('name', record.employee.name),
+            ('date', record.date),
+            ('task_name', record.task_name),
+            ('duration', record.duration),
+            ('notes', record.notes)
+        ])
+
+    def records_to_list(self, records):
+        """Creates a list from a collection of records"""
+        list = []
+        for record in records:
+            list.append(self.record_to_dict(record))
+        return list
+
     
 # -- Database Model Classes --
 

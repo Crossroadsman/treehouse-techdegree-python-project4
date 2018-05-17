@@ -17,13 +17,7 @@ class Menu:
                      'datetime format': '%m/%d/%Y'},
     }
 
-    HEADERS = {
-        'user': 'employee',
-        'date': 'date',
-        'task_name': 'task_name',
-        'duration': 'duration',
-        'notes': 'notes'
-    }
+    HEADERS = settings.HEADERS
 
     DATASTORE_FILENAME = settings.DATABASE_NAME
 
@@ -295,7 +289,7 @@ class Menu:
 
         # SELECT name FROM employee;
         #...
-        
+
     def search_exact_date(self):
         '''This is the menu where the user browses dates and entries and picks
         the date from a list
