@@ -273,7 +273,8 @@ class Menu:
                 print("Value out of range. Try again.")
                 continue
             try:
-                selected_employee = employee_names[user_input]
+                selected_employee = employee_names[user_input]['name']
+                print(selected_employee)
             except IndexError:
                 print("Value out of range. Try again.")
                 continue
