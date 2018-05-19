@@ -21,15 +21,16 @@ class DBManager:
         
     def add_entry(self, entry):
         """Add an entry."""
+        print(entry)
         try:
-            employee_record = Employee.get(Employee.name == entry["employee"])
+            employee_record = Employee.get(Employee.name == entry["name"])
         except DoesNotExist:
             # right now we can handle DoesNotExist cleanly because the only
             # value we need to know to create a new Employee instance is
             # provided as part of the entry.
             # If ever Employee ever becomes a more sophisticated model, we'll
             # need to go back to the user to get them to provide more info
-            employee_record = Employee.create(name=entry["employee"])
+            employee_record = Employee.create(name=entry["name"])
         except IntegrityError as err:
             # if unable to create a record because it would violate, e.g.,
             # a UNIQUE constraint.

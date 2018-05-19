@@ -235,6 +235,7 @@ class Menu:
             del(inputs['n'])
         print("\nResult {}".format(self.current_record + 1))
         record = self.records[self.current_record]
+        print("this is the record: {}".format(record))
         self.display_entry(record, verbose=True)
 
         print("\nAvailable actions:")

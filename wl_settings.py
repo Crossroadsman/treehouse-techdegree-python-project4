@@ -2,7 +2,7 @@ DATABASE_NAME = 'test.db'
 #DATABASE_NAME = 'work_log.db'
 
 HEADERS = {
-        'user': 'employee',
+        'user': 'name',
         'date': 'date',
         'task_name': 'task_name',
         'duration': 'duration',
