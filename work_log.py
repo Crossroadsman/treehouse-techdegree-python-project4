@@ -406,6 +406,8 @@ class Menu:
         self.current_record = 0
         return self.present_next_result
     
+    # Modification Methods
+    # --------------------
     def edit_record(self):
         print("edit record")
         print('enter the record number to edit')
@@ -549,6 +551,7 @@ class Menu:
         return self.main_menu
 
     # Other UI Methods
+    # ----------------
     def display_entry(self, entry, verbose=False, return_only=False):
         """This method displays a selected entry, showing:
         - date (read from file in iso 8601 and displayed in whatever is set in
@@ -602,6 +605,7 @@ class Menu:
         return self.present_results
 
     # Helper Methods
+    # --------------
     def validate_date_entry(self, date_string, date_format):
         """Takes a date_string and date_format and attempts to create
         a valid datetime object with those imports.
