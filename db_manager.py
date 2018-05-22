@@ -88,6 +88,20 @@ class DBManager:
                  .where(LogEntry.date == date)
         )
         return self.records_to_list(query)
+    
+    def view_entries_for_date_range(self, start_date, end_date):
+        """get all entries with a date is between start_date and
+        end_date (inclusive)"""
+        query = (LogEntry
+                 .select()
+                 .join(Employee)
+                 .where(
+                     (LogEntry.date >= start_date) &
+                     (LogEntry.date <= end_date)
+                 )
+                 .order_by(LogEntry.date)
+        )
+        return self.records_to_list(query)
 
     def view_everything(self, employee=None, date_sorted=False):
         """get every field for every log entry

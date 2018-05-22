@@ -346,26 +346,19 @@ class Menu:
                 continue
             else:
                 end_date = user_entry[1]
-        # load csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        # loop through every loop in range (inclusive)
+        # load db
+        dbm = DBManager()
+        # switch start and end dates if end < start
         if end_date < start_date:
             current_date = end_date
             end_date = start_date
             start_date = end_date
         else:
             current_date = start_date
-        print("\nShowing entries:")
-        matching_records = []
-        while current_date <= end_date:
-            #   show entries
-            date_string = self.date_to_string(current_date, target='file')
-            matching_records += self.get_matching_records(csv_data,
-                                                          settings.HEADERS['date'],
-                                                          date_string)
-            current_date = current_date + datetime.timedelta(days=1)
+        # get all records in date range
+        matching_records = dbm.view_entries_for_date_range(start_date, end_date)
 
+        print("\nShowing entries:")
         if len(matching_records) == 0:
             print("\nNo matches, returning to search menu")
             return self.search_entries
