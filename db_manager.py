@@ -79,13 +79,22 @@ class DBManager:
         if sorted:
             query = query.order_by(LogEntry.date)
         return [OrderedDict([('date', record.date)]) for record in query]
-    
+
     def view_entries_for_date(self, date):
         """get all the entries for the given date"""
         query = (LogEntry
                  .select()
                  .join(Employee)
                  .where(LogEntry.date == date)
+        )
+        return self.records_to_list(query)
+
+    def view_entries_for_duration(self, duration):
+        """get all the entries for the given duration"""
+        query = (LogEntry
+                 .select()
+                 .join(Employee)
+                 .where(LogEntry.duration == duration)
         )
         return self.records_to_list(query)
     
@@ -100,6 +109,20 @@ class DBManager:
                      (LogEntry.date <= end_date)
                  )
                  .order_by(LogEntry.date)
+        )
+        return self.records_to_list(query)
+
+    def view_entries_with_text(self, text_string):
+        """Get all entries where any of the text fields contains the
+        specified text string"""
+        query = (LogEntry
+                 .select()
+                 .join(Employee)
+                 .where(
+                     (Employee.name.contains(text_string)) |
+                     (LogEntry.task_name.contains(text_string)) |
+                     (LogEntry.notes.contains(text_string))
+                 )
         )
         return self.records_to_list(query)
 

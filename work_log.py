@@ -145,8 +145,6 @@ class Menu:
                   'function': self.search_time_spent},
             's': {'text': 'text Search',
                   'function': self.search_text_search},
-            'x': {'text': 'regeX pattern search',
-                  'function': self.search_regex_search},
             'b': {'text': 'Back to main menu',
                   'function': self.main_menu}
         }
@@ -380,13 +378,9 @@ class Menu:
             except ValueError:
                 print("Invalid value")
                 continue
-        # load csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        field_title = settings.HEADERS['duration']
-        matching_records = self.get_matching_records(csv_data,
-                                                     field_title,
-                                                     str(time_spent))
+        # load db
+        dbm = DBManager()
+        matching_records = dbm.view_entries_for_duration(time_spent)
         if len(matching_records) == 0:
             print("\nNo matches, returning to search menu")
             return self.search_entries
@@ -398,72 +392,20 @@ class Menu:
         """This is the menu where the user enters a text string and is presented
         with all entries containing that string in the task name or notes
         """
-        text_headers = [
-            settings.HEADERS['user'],
-            settings.HEADERS['task_name'],
-            settings.HEADERS['notes']
-        ]
         print('SEARCH USING TEXT STRING')
         print("Enter the text string to search on")
         input_text = input("> ")
         text_string = input_text
-        # load csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        # perform search
-        matching_records = []
-        for header in text_headers:
-            matches_for_header = self.get_records_containing(csv_data,
-                                                             header,
-                                                             text_string)
-            if len(matches_for_header) > 0:
-                matching_records.append(matches_for_header)
-        uniques = []
-        for record in matching_records:
-            if record not in uniques:
-                uniques += record
-        if len(uniques) == 0:
+        # load db
+        dbm = DBManager()
+        matching_records = dbm.view_entries_with_text(text_string)
+        if len(matching_records) == 0:
             print("\nNo matches, returning to search menu")
             return self.search_entries
-        self.records = uniques
+        self.records = matching_records
         self.current_record = 0
         return self.present_next_result
-
-    def search_regex_search(self):
-        """This menu is just like `search_text_search` except the user provides
-        a regex pattern instead of a text string
-        """
-        text_headers = [
-            settings.HEADERS['user'],
-            settings.HEADERS['task_name'],
-            settings.HEADERS['notes']
-        ]
-        print('SEARCH USING REGEX PATTERN')
-        print("Enter the pattern to search on")
-        input_text = input("> ")
-        pattern = input_text
-        # load csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        # perform search
-        matching_records = []
-        for header in text_headers:
-            matches_for_header = self.get_records_with_pattern(csv_data,
-                                                               header,
-                                                               pattern)
-            if len(matches_for_header) > 0:
-                matching_records.append(matches_for_header)
-        uniques = []
-        for record in matching_records:
-            if record not in uniques:
-                uniques += record
-        if len(uniques) == 0:
-            print("\nNo matches, returning to search menu")
-            return self.search_entries
-        self.records = uniques
-        self.current_record = 0
-        return self.present_next_result
-
+    
     def edit_record(self):
         print("edit record")
         print('enter the record number to edit')
