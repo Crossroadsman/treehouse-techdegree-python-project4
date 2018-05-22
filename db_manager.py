@@ -10,13 +10,21 @@ db = SqliteDatabase(settings.DATABASE_NAME)
 
 class DBManager:
 
-    def initialize(self):
+    def __init__(self):
         """Create the database and the table if they don't already exist
         Note that we don't HAVE to explicitly connect to the DB now but it
         makes bug checking easier than having the connection fail when we try
         to do a query
         """
-        db.connect()
+        try:
+            db.connect()
+        except OperationalError as err:
+            if err == "Connection already opened.":
+                print('connection open, skipping connect()')
+            else:
+                print("operational error!")
+                print("detailed error information:")
+                print(err)
         db.create_tables(tables, safe=True)
         
     def add_entry(self, entry):
@@ -65,10 +73,11 @@ class DBManager:
         query = Employee.select(Employee.name).join(LogEntry).distinct()
         return [OrderedDict([('name', record.name)]) for record in query]
     
-    def view_everything(self, employee=None):
+    def view_everything(self, employee=None, date_sorted=False):
         """get every field for every log entry
-        Can optionally specify a particular employee name to filter by that
+        - Can optionally specify a particular employee name to filter by that
         employee
+        - Can optionally sort by date
         """
         if employee is not None:
             query = (LogEntry
@@ -78,8 +87,9 @@ class DBManager:
             )
         else:
             query = LogEntry.select().join(Employee)
+        if date_sorted:
+            query = query.order_by(LogEntry.date)
         return self.records_to_list(query)
-            
 
     def view_entries(self):
         """View previous entries"""
@@ -155,7 +165,6 @@ if __name__ == "__main__":
             dbm.add_entry(entry)
 
     dbm = DBManager()
-    dbm.initialize()
     #menu_loop()
 
     # Peewee ORM methods
