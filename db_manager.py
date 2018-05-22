@@ -72,7 +72,23 @@ class DBManager:
         #query = joined.select()
         query = Employee.select(Employee.name).join(LogEntry).distinct()
         return [OrderedDict([('name', record.name)]) for record in query]
+
+    def view_dates(self, sorted=True):
+        """get all unique date records"""
+        query = LogEntry.select(LogEntry.date).distinct()
+        if sorted:
+            query = query.order_by(LogEntry.date)
+        return [OrderedDict([('date', record.date)]) for record in query]
     
+    def view_entries_for_date(self, date):
+        """get all the entries for the given date"""
+        query = (LogEntry
+                 .select()
+                 .join(Employee)
+                 .where(LogEntry.date == date)
+        )
+        return self.records_to_list(query)
+
     def view_everything(self, employee=None, date_sorted=False):
         """get every field for every log entry
         - Can optionally specify a particular employee name to filter by that

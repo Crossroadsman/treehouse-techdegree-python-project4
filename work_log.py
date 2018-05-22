@@ -11,8 +11,8 @@ class Menu:
     # ----------------
     quit = False
 
-    # INITIALIZERS
-    # ------------
+    # INITIALIZER
+    # -----------
     def __init__(self):
         print("\nWORK LOG")
         print("========")
@@ -293,11 +293,9 @@ class Menu:
         print("\nSEARCH EXACT DATE")
         # load the db manager
         dbm = DBManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        date_records = self.get_column(csv_data,
-                                       settings.HEADERS['date'],
-                                       unique=True)
+        date_records = dbm.view_dates()
         for i, value in enumerate(date_records):
+            value = self.date_to_string(value['date'])
             print("{}) {}".format(i + 1, value))
         selected_date = None
         while selected_date is None:
@@ -312,15 +310,13 @@ class Menu:
                 print("Value out of range. Try again.")
                 continue
             try:
-                selected_date = date_records[user_input]
+                selected_date = date_records[user_input]['date']
             except IndexError:
                 print("Value out of range. Try again.")
                 continue
 
             # when a date is selected, show all the entries with that date
-            matching_records = self.get_matching_records(csv_data,
-                                                         settings.HEADERS['date'],
-                                                         selected_date)
+            matching_records = dbm.view_entries_for_date(selected_date)
         self.records = matching_records
         self.current_record = 0
         return self.present_next_result
@@ -727,7 +723,7 @@ class Menu:
         """
         if target == 'display':
             option = self.OPTIONS['date format']
-            string_format = option['UI format']
+            string_format = option['datetime format']
         elif target == 'file':
             option = self.OPTIONS['save format (date)']
             string_format = option['datetime format']
