@@ -135,8 +135,10 @@ class Menu:
         """This is the search menu. The user selects how they want to search.
         """
         inputs = {
-            'e': {'text': 'Employee name',
+            'l': {'text': 'employee names List',
                   'function': self.search_employee},
+            'e': {'text': 'Employee name Search',
+                  'function': self.search_employee_text},
             'd': {'text': 'single Date',
                   'function': self.search_exact_date},
             'r': {'text': 'date Range',
@@ -257,6 +259,44 @@ class Menu:
         #load the db manager
         dbm = DBManager()
         employee_names = dbm.view_employees()
+        for i, value in enumerate(employee_names):
+            print("{}) {}".format(i + 1, value['name']))
+        selected_employee = None
+        while selected_employee is None:
+            user_input = input("> ")
+            # perform input validation
+            try:
+                user_input = int(user_input) - 1
+            except ValueError:
+                print("Invalid value, try again")
+                continue
+            if user_input < 0:
+                print("Value out of range. Try again.")
+                continue
+            try:
+                selected_employee = employee_names[user_input]['name']
+                print(selected_employee)
+            except IndexError:
+                print("Value out of range. Try again.")
+                continue
+            # when an employee is selected, show all the entries with that e'ee
+            matching_records = dbm.view_everything(employee=selected_employee)
+        self.records = matching_records
+        print(self.records)
+        self.current_record = 0
+        return self.present_next_result
+
+    def search_employee_text(self):
+        """This is the menu where the user enters a text string and is presented
+        with all employee names containing that string
+        """
+        print('FIND EMPLOYEE NAME USING TEXT STRING')
+        print("Enter the text string to search on")
+        input_text = input("> ")
+        text_string = input_text
+        # load db
+        dbm = DBManager()
+        employee_names = dbm.view_names_with_text(text_string)
         for i, value in enumerate(employee_names):
             print("{}) {}".format(i + 1, value['name']))
         selected_employee = None

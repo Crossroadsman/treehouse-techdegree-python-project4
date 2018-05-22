@@ -126,6 +126,20 @@ class DBManager:
         )
         return self.records_to_list(query)
 
+    def view_names_with_text(self, text_string):
+        """Get all employee names where any of the text in the name matches
+        the specified text string"""
+        Employee.select(Employee.name).join(LogEntry).distinct()
+        query = (Employee
+                 .select(Employee.name)
+                 .join(LogEntry)
+                 .distinct()
+                 .where(
+                     Employee.name.contains(text_string)
+                 )
+        )
+        return [OrderedDict([('name', record.name)]) for record in query]
+
     def view_everything(self, employee=None, date_sorted=False):
         """get every field for every log entry
         - Can optionally specify a particular employee name to filter by that
