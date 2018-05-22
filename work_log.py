@@ -671,54 +671,6 @@ class Menu:
             string_format = option['datetime format']
         return date_object.strftime(string_format)
 
-    def get_column(self, data_set, field_title, unique=False):
-        """takes a data set and the name of a column and returns a list of all
-        records in that column.
-
-        If unique is set to True, returns only unique values (while
-        preserving order)"""
-        items = [row[field_title] for row in data_set]
-        if not unique:
-            return items
-        else:
-            unique_items = []
-            for item in items:
-                if item not in unique_items:
-                    unique_items.append(item)
-            return unique_items
-
-    def get_matching_records(self, data_set, field_title, value):
-        """takes a data set and the name of a column and a value and returns
-        all the rows where the specified column has the specified value
-        """
-        return [row for row in data_set if row[field_title] == value]
-
-    def get_records_containing(self, data_set, field_title, value):
-        """takes a data set, the name of a column, value and returns all
-        the rows where the specified value appears in the specified column
-        """
-        output_records = []
-        if self.OPTIONS['case sensitive search']:
-            for row in data_set:
-                if row[field_title].find(value) >= 0:
-                    output_records.append(row)
-        else:
-            for row in data_set:
-                if row[field_title].lower().find(value.lower()) >= 0:
-                    output_records.append(row)
-
-        return output_records
-
-    def get_records_with_pattern(self, data_set, field_title, pattern):
-        """takes a data set, the name of a column, a pattern and returns
-        all the rows where the specified regex pattern appears in the
-        specified column rows
-        """
-        def check_match(row):
-            return re.search(pattern, row[field_title]) is not None
-
-        return [row for row in data_set if check_match(row)]
-
 # ---------------------------
 
 if __name__ == "__main__":
