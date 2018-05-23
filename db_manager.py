@@ -207,8 +207,27 @@ class DBManager:
             query = query.order_by(LogEntry.date)
         return self.records_to_list(query)
 
-    def view_entries(self):
-        """View previous entries"""
+    def view_entry(self, entry):
+        """returns a single entry"""
+        try:
+            log_entry_record = LogEntry.get(
+                LogEntry.employee.name == entry["name"],
+                LogEntry.date == entry["date"],
+                LogEntry.task_name == entry["task_name"],
+                LogEntry.duration == entry["duration"],
+                LogEntry.notes == entry["notes"]
+            )
+        except DoesNotExist as err:
+            print("Log Entry Does not exist error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        except IntegrityError as err:
+            print("Log Entry integrity error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        return self.record_to_dict(log_entry_record)
 
     def delete_entry(self, entry):
         """Delete the specified entry"""

@@ -454,6 +454,8 @@ class Menu:
         user_input = input("> ")
         match_index = int(user_input) - 1
         record = self.records[match_index]
+        print("RECORD:")
+        print(record)
         # get the new values for the record
         print("New Username")
         input_text = input("Enter the username > ")
@@ -485,20 +487,15 @@ class Menu:
         notes = input_text
         # load the db
         dbm = DBManager()
-        
-        # load the csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        # find the row that matches record
-        for row in csv_data:
-            if row == record:
-                row[settings.HEADERS['user']] = username
-                row[settings.HEADERS['date']] = date_string
-                row[settings.HEADERS['task_name']] = task_name
-                row[settings.HEADERS['duration']] = time_spent
-                row[settings.HEADERS['notes']] = notes
-        # save the csv
-        csvm.save_csv(csv_data, self.DATASTORE_FILENAME, truncate=True)
+        #old_entry = dbm.view_entries
+        new_values = {
+            'name': username,
+            'date': date,
+            'task_name': task_name,
+            'duration': time_spent,
+            'notes': notes
+        }
+        dbm.edit_entry(record, new_values)
         return self.main_menu
 
     def edit_current_record(self):
@@ -534,19 +531,16 @@ class Menu:
         print("New notes")
         input_text = input("(Optional, leave blank for none) ")
         notes = input_text
-        # load the csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        # find the row that matches record
-        for row in csv_data:
-            if row == record:
-                row[settings.HEADERS['user']] = username
-                row[settings.HEADERS['date']] = date_string
-                row[settings.HEADERS['task_name']] = task_name
-                row[settings.HEADERS['duration']] = time_spent
-                row[settings.HEADERS['notes']] = notes
-        # save the csv
-        csvm.save_csv(csv_data, self.DATASTORE_FILENAME, truncate=True)
+        # load the db
+        dbm = DBManager()
+        new_values = {
+            'name': username,
+            'date': date,
+            'task_name': task_name,
+            'duration': time_spent,
+            'notes': notes
+        }
+        dbm.edit_entry(record, new_values)
         return self.main_menu
 
     def select_detail(self):
