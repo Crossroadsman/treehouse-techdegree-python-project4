@@ -601,7 +601,8 @@ class Menu:
         - any notes
         """
         username = entry[settings.HEADERS['user']]
-        date = entry[settings.HEADERS['date']]
+        date_object = entry[settings.HEADERS['date']]
+        date = self.date_to_string(date_object, target="display")
         task_name = entry[settings.HEADERS['task_name']]
         time_taken = entry[settings.HEADERS['duration']]
         notes = entry[settings.HEADERS['notes']]
