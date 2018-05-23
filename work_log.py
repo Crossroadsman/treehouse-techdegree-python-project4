@@ -559,34 +559,27 @@ class Menu:
         user_input = input("> ")
         match_index = int(user_input) - 1
         record = self.records[match_index]
-        # load te csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        # find the row that matches record
-        for row in csv_data:
-            if row == record:
-                # delete that reow
-                csv_data.remove(row)
-                break
-        # save the csv
-        csvm.save_csv(csv_data, self.DATASTORE_FILENAME, truncate=True)
+        print(record)
+        # load db
+        dbm = DBManager()
+        deleted = dbm.delete_entry(record)
+        if deleted:
+            print("Entry deleted")
+        else:
+            print("Entry not deleted")
         return self.main_menu
 
     def delete_current_record(self):
         print("delete record")
         match_index = self.current_record
         record = self.records[match_index]
-        # load te csv
-        csvm = CsvManager()
-        csv_data = csvm.load_csv(self.DATASTORE_FILENAME)
-        # find the row that matches record
-        for row in csv_data:
-            if row == record:
-                # delete that row
-                csv_data.remove(row)
-                break
-        # save the csv
-        csvm.save_csv(csv_data, self.DATASTORE_FILENAME, truncate=True)
+        # load db
+        dbm = DBManager()
+        deleted = dbm.delete_entry(record)
+        if deleted:
+            print("Entry deleted")
+        else:
+            print("Entry not deleted")
         return self.main_menu
 
     # Other UI Methods

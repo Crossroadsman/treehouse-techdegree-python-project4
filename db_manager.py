@@ -202,11 +202,33 @@ class DBManager:
             query = query.order_by(LogEntry.date)
         return self.records_to_list(query)
 
-    def view_entry(self, entry):
-        """returns a single entry"""
+    def view_entry(self, entry, return_model=False):
+        """returns a single entry
+        if return_model is set to True, returns a model instance,
+        otherwise returns OrderedDict"""
+        print("attemping to access entry:")
+        print("name: {}".format(entry["name"]))
+        print("date: {}".format(entry["date"]))
+        print("task_name: {}".format(entry["task_name"]))
+        print("duration: {}".format(entry["duration"]))
+        print("notes: {}".format(entry["notes"]))
+        # first make sure that the Employee exists and can be retrieved
+        try:
+            employee_record = Employee.get(Employee.name == entry["name"])
+        except DoesNotExist as err:
+            print("Employee Does not exist error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        except IntegrityError as err:
+            print("Employee integrity error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        # next, make sure that the LogEntry record exists and can be retrieved
         try:
             log_entry_record = LogEntry.get(
-                LogEntry.employee.name == entry["name"],
+                LogEntry.employee == employee_record,
                 LogEntry.date == entry["date"],
                 LogEntry.task_name == entry["task_name"],
                 LogEntry.duration == entry["duration"],
@@ -222,10 +244,23 @@ class DBManager:
             print("detailed error information:")
             print(err)
             raise
-        return self.record_to_dict(log_entry_record)
+        if return_model:
+            return log_entry_record
+        else:
+            return self.record_to_dict(log_entry_record)
 
     def delete_entry(self, entry):
         """Delete the specified entry"""
+        for key, value in entry.items():
+            print("{}: {}".format(key, value))
+        # Attempt to get log entry
+        log_entry = self.view_entry(entry, return_model=True)
+        try:
+            log_entry.delete_instance()
+            return True
+        except:
+            return False
+
 
     # Helper Methods
     def record_to_dict(self, record):
