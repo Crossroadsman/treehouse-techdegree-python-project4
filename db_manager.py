@@ -8,6 +8,7 @@ import wl_settings as settings
 
 db = SqliteDatabase(settings.DATABASE_NAME)
 
+
 class DBManager:
 
     def __init__(self):
@@ -26,7 +27,7 @@ class DBManager:
                 print("detailed error information:")
                 print(err)
         db.create_tables(tables, safe=True)
-        
+
     def add_entry(self, entry):
         """Add an entry."""
         print(entry)
@@ -45,10 +46,10 @@ class DBManager:
             # Note this won't help us we accidentally try to add duplicate
             # records that don't violate any constraints.
 
-            #current_record = LogEntry.get(<some unique field>)
-            #current_record.employee = entry['employee']
-            #<etc>
-            #current_record.save()
+            # current_record = LogEntry.get(<some unique field>)
+            # current_record.employee = entry['employee']
+            # <etc>
+            # current_record.save()
             print("integrity error!")
             print("detailed error information:")
             print(err)
@@ -64,7 +65,7 @@ class DBManager:
             print("integrity error!")
             print("detailed error information:")
             print(err)
-    
+
     def edit_entry(self, entry, new_value):
         """Edits an existing entry"""
         print(entry)
@@ -117,8 +118,8 @@ class DBManager:
     def view_employees(self):
         """get all employees who have made entries"""
         # join() defaults to inner join
-        #joined = Employee.join(LogEntry)
-        #query = joined.select()
+        # joined = Employee.join(LogEntry)
+        # query = joined.select()
         query = Employee.select(Employee.name).join(LogEntry).distinct()
         return [OrderedDict([('name', record.name)]) for record in query]
 
@@ -134,8 +135,7 @@ class DBManager:
         query = (LogEntry
                  .select()
                  .join(Employee)
-                 .where(LogEntry.date == date)
-        )
+                 .where(LogEntry.date == date))
         return self.records_to_list(query)
 
     def view_entries_for_duration(self, duration):
@@ -143,10 +143,9 @@ class DBManager:
         query = (LogEntry
                  .select()
                  .join(Employee)
-                 .where(LogEntry.duration == duration)
-        )
+                 .where(LogEntry.duration == duration))
         return self.records_to_list(query)
-    
+
     def view_entries_for_date_range(self, start_date, end_date):
         """get all entries with a date is between start_date and
         end_date (inclusive)"""
@@ -157,8 +156,7 @@ class DBManager:
                      (LogEntry.date >= start_date) &
                      (LogEntry.date <= end_date)
                  )
-                 .order_by(LogEntry.date)
-        )
+                 .order_by(LogEntry.date))
         return self.records_to_list(query)
 
     def view_entries_with_text(self, text_string):
@@ -171,8 +169,7 @@ class DBManager:
                      (Employee.name.contains(text_string)) |
                      (LogEntry.task_name.contains(text_string)) |
                      (LogEntry.notes.contains(text_string))
-                 )
-        )
+                 ))
         return self.records_to_list(query)
 
     def view_names_with_text(self, text_string):
@@ -185,8 +182,7 @@ class DBManager:
                  .distinct()
                  .where(
                      Employee.name.contains(text_string)
-                 )
-        )
+                 ))
         return [OrderedDict([('name', record.name)]) for record in query]
 
     def view_everything(self, employee=None, date_sorted=False):
@@ -199,8 +195,7 @@ class DBManager:
             query = (LogEntry
                      .select()
                      .join(Employee)
-                     .where(employee == Employee.name)
-            )
+                     .where(employee == Employee.name))
         else:
             query = LogEntry.select().join(Employee)
         if date_sorted:
@@ -234,7 +229,7 @@ class DBManager:
 
     # Helper Methods
     def record_to_dict(self, record):
-        """Takes a single record and returns an OrderedDict representing that 
+        """Takes a single record and returns an OrderedDict representing that
         data"""
         return OrderedDict([
             ('name', record.employee.name),
@@ -251,8 +246,8 @@ class DBManager:
             list.append(self.record_to_dict(record))
         return list
 
-    
 # -- Database Model Classes --
+
 
 class Employee(Model):
     """This is the class to represent an employee"""
@@ -260,6 +255,7 @@ class Employee(Model):
 
     class Meta:
         database = db
+
 
 class LogEntry(Model):
     """This is the class to represent the log entry database table"""
@@ -284,15 +280,15 @@ if __name__ == "__main__":
 
     log_entries = [
         {'employee': 'lucy',
-        'date': '2015-07-07',
-        'task_name': 'be the original dog',
-        'duration': 1,
-        'notes': 'Very class dog'},
+         'date': '2015-07-07',
+         'task_name': 'be the original dog',
+         'duration': 1,
+         'notes': 'Very class dog'},
         {'employee': 'rosie',
-        'date': '2018-01-03',
-        'task_name': 'be the most mischievous but loveable puppy',
-        'duration': 2,
-        'notes': 'Naughty but nice!'},
+         'date': '2018-01-03',
+         'task_name': 'be the most mischievous but loveable puppy',
+         'duration': 2,
+         'notes': 'Naughty but nice!'},
     ]
 
     def add_log_entries(log_entries_list):
@@ -300,17 +296,17 @@ if __name__ == "__main__":
             dbm.add_entry(entry)
 
     dbm = DBManager()
-    #menu_loop()
+    # menu_loop()
 
     # Peewee ORM methods
     # create a new instance 'all at once'
     # .create()
-    #add_employees(employees)
+    # add_employees(employees)
     add_log_entries(log_entries)
 
     # retrieve records in table
     # .select()
-    
+
     # retrieve a single record
     # .get()
 
