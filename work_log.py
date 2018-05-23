@@ -1,3 +1,12 @@
+#!/usr/bin/env python3
+
+"""Work Log
+Record work activities and store to a sqlite database
+
+Created: 2018
+Last Update: 2018-05-23
+Author: Alex Koumparos
+"""
 import datetime
 import re
 
@@ -7,7 +16,9 @@ import wl_settings as settings
 
 
 class Menu:
-
+    """The user-facing class that handles all interaction with the user and
+    interfaces with the database manager.
+    """
     # STATUS VARIABLES
     # ----------------
     quit = False
@@ -15,6 +26,9 @@ class Menu:
     # INITIALIZER
     # -----------
     def __init__(self):
+        """Instantiates the app, applies default settings and launches the
+        main menu.
+        """
         print("\nWORK LOG")
         print("========")
         self.OPTIONS = {

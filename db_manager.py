@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+
+"""DB Manager
+All the database-related functionality.
+Communicates with the rest of the application using OrderDicts
+
+Created: 2018
+Last Update: 2018-05-23
+Author: Alex Koumparos
+"""
 from collections import OrderedDict
 
 from peewee import *
@@ -10,9 +19,14 @@ db = SqliteDatabase(settings.DATABASE_NAME)
 
 
 class DBManager:
-
+    """The Database Manager, has all the functionality for initialising and
+    maintaining the database. Has methods to provide data to the rest of the
+    application in the form of OrderDicts so the nature and implementation of
+    the database itself is abstracted away.
+    """
     def __init__(self):
-        """Create the database and the table if they don't already exist
+        """Create the database and the table if they don't already exist.
+        
         Note that we don't HAVE to explicitly connect to the DB now but it
         makes bug checking easier than having the connection fail when we try
         to do a query
