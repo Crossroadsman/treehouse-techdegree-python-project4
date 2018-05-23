@@ -1,9 +1,10 @@
 import datetime
 import re
 
-#from csv_manager import CsvManager
+# from csv_manager import CsvManager
 from db_manager import DBManager
 import wl_settings as settings
+
 
 class Menu:
 
@@ -22,7 +23,7 @@ class Menu:
             'case sensitive search': False,
             'entries per page': 10,
             'allow future dates': False,
-            'earliest allowed date': datetime.datetime(1900,1,1),
+            'earliest allowed date': datetime.datetime(1900, 1, 1),
         }
         self.current_record = 0
         self.current_page_start = 0
@@ -256,7 +257,7 @@ class Menu:
         who have entries, and can select a particular employee to see
         all their entries"""
         print("\nSEARCH BY EMPLOYEE")
-        #load the db manager
+        # load the db manager
         dbm = DBManager()
         employee_names = dbm.view_employees()
         for i, value in enumerate(employee_names):
@@ -394,7 +395,8 @@ class Menu:
         else:
             current_date = start_date
         # get all records in date range
-        matching_records = dbm.view_entries_for_date_range(start_date, end_date)
+        matching_records = dbm.view_entries_for_date_range(start_date,
+                                                           end_date)
 
         print("\nShowing entries:")
         if len(matching_records) == 0:
@@ -445,7 +447,7 @@ class Menu:
         self.records = matching_records
         self.current_record = 0
         return self.present_next_result
-    
+
     # Modification Methods
     # --------------------
     def edit_record(self):
@@ -487,7 +489,7 @@ class Menu:
         notes = input_text
         # load the db
         dbm = DBManager()
-        #old_entry = dbm.view_entries
+        # old_entry = dbm.view_entries
         new_values = {
             'name': username,
             'date': date,
@@ -613,10 +615,10 @@ class Menu:
             print("{}".format(notes))
         else:
             short_form = "{}: {} ({}m): {} | {}".format(username,
-                                                    date,
-                                                    time_taken,
-                                                    task_name,
-                                                    notes)
+                                                        date,
+                                                        time_taken,
+                                                        task_name,
+                                                        notes)
             if return_only:
                 return short_form
             else:
@@ -667,7 +669,7 @@ class Menu:
                 if naive_datetime > datetime.datetime.now():
                     error_text = "dates in the future are not permitted"
                     error_args = {"date_string": date_string,
-                          "date_format": date_format['UI format']}
+                                  "date_format": date_format['UI format']}
                     return (error_text.format(**error_args), None)
                 if naive_datetime < self.OPTIONS['earliest allowed date']:
                     bad_date = self.OPTIONS['earliest allowed date'].strftime(
@@ -677,7 +679,7 @@ class Menu:
                         bad_date
                     )
                     error_args = {"date_string": date_string,
-                          "date_format": date_format['UI format']}
+                                  "date_format": date_format['UI format']}
                     return (error_text.format(**error_args), None)
             return (None, naive_datetime)
 
