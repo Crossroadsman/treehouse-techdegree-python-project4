@@ -483,6 +483,9 @@ class Menu:
         print("New notes")
         input_text = input("(Optional, leave blank for none) ")
         notes = input_text
+        # load the db
+        dbm = DBManager()
+        
         # load the csv
         csvm = CsvManager()
         csv_data = csvm.load_csv(self.DATASTORE_FILENAME)

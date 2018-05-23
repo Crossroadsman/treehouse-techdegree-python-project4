@@ -64,6 +64,55 @@ class DBManager:
             print("integrity error!")
             print("detailed error information:")
             print(err)
+    
+    def edit_entry(self, entry, new_value):
+        """Edits an existing entry"""
+        print(entry)
+        # first make sure that the Employee exists and can be retrieved
+        try:
+            employee_record = Employee.get(Employee.name == entry["name"])
+        except DoesNotExist as err:
+            print("Employee Does not exist error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        except IntegrityError as err:
+            print("Employee integrity error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        # next, make sure that the LogEntry record exists and can be retrieved
+        try:
+            log_entry_record = LogEntry.get(
+                LogEntry.employee == employee_record,
+                LogEntry.date == entry["date"],
+                LogEntry.task_name == entry["task_name"],
+                LogEntry.duration == entry["duration"],
+                LogEntry.notes == entry["notes"]
+            )
+        except DoesNotExist as err:
+            print("Log Entry Does not exist error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        except IntegrityError as err:
+            print("Log Entry integrity error!")
+            print("detailed error information:")
+            print(err)
+            raise
+        # try to set the employee record to the new employee
+        employee_record = Employee.get_or_create(
+            name=new_value["name"]
+        )[0]
+        employee_record.save()
+        # try to set the log entry record to the new record
+        log_entry_record.employee = employee_record
+        log_entry_record.date = new_value["date"]
+        log_entry_record.task_name = new_value["task_name"]
+        log_entry_record.duration = new_value["duration"]
+        log_entry_record.notes = new_value["notes"]
+        log_entry_record.save()
+        return self.record_to_dict(log_entry_record)
 
     def view_employees(self):
         """get all employees who have made entries"""
