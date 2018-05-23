@@ -26,7 +26,7 @@ class DBManager:
     """
     def __init__(self):
         """Create the database and the table if they don't already exist.
-        
+
         Note that we don't HAVE to explicitly connect to the DB now but it
         makes bug checking easier than having the connection fail when we try
         to do a query
@@ -43,7 +43,10 @@ class DBManager:
         db.create_tables(tables, safe=True)
 
     def add_entry(self, entry):
-        """Add an entry."""
+        """Add an entry. Writes the specified entry to the database.
+        
+        The entry should be in the form of a dict or OrderedDict.
+        """
         print(entry)
         try:
             employee_record = Employee.get(Employee.name == entry["name"])
@@ -81,7 +84,13 @@ class DBManager:
             print(err)
 
     def edit_entry(self, entry, new_value):
-        """Edits an existing entry"""
+        """Edits an existing entry.
+        
+        `entry` and `new_value` should be key-value pairs (e.g., dict or
+        OrderedDict).
+
+        Returns the new record as an OrderedDict.
+        """
         print(entry)
         # first make sure that the Employee exists and can be retrieved
         try:
@@ -130,7 +139,10 @@ class DBManager:
         return self.record_to_dict(log_entry_record)
 
     def view_employees(self):
-        """get all employees who have made entries"""
+        """Get all employees who have made entries.
+        
+        Returns a list of records (where each record is an OrderedDict)
+        """
         # join() defaults to inner join
         # joined = Employee.join(LogEntry)
         # query = joined.select()
@@ -138,14 +150,20 @@ class DBManager:
         return [OrderedDict([('name', record.name)]) for record in query]
 
     def view_dates(self, sorted=True):
-        """get all unique date records"""
+        """get all unique date records.
+        
+        Returns them as a list of OrderedDicts.
+        """
         query = LogEntry.select(LogEntry.date).distinct()
         if sorted:
             query = query.order_by(LogEntry.date)
         return [OrderedDict([('date', record.date)]) for record in query]
 
     def view_entries_for_date(self, date):
-        """get all the entries for the given date"""
+        """Get all the entries for the given date.
+        
+        Return the entries as a list of OrderedDicts.
+        """
         query = (LogEntry
                  .select()
                  .join(Employee)
@@ -153,7 +171,10 @@ class DBManager:
         return self.records_to_list(query)
 
     def view_entries_for_duration(self, duration):
-        """get all the entries for the given duration"""
+        """Get all the entries with the given duration.
+
+        Returns them as a list of OrderedDicts.
+        """
         query = (LogEntry
                  .select()
                  .join(Employee)
@@ -161,8 +182,11 @@ class DBManager:
         return self.records_to_list(query)
 
     def view_entries_for_date_range(self, start_date, end_date):
-        """get all entries with a date is between start_date and
-        end_date (inclusive)"""
+        """Get all entries with a date is between start_date and
+        end_date (inclusive).
+
+        Return them as a list of OrderedDicts.
+        """
         query = (LogEntry
                  .select()
                  .join(Employee)
@@ -175,7 +199,10 @@ class DBManager:
 
     def view_entries_with_text(self, text_string):
         """Get all entries where any of the text fields contains the
-        specified text string"""
+        specified text string.
+        
+        Return them as a list of OrderedDicts.
+        """
         query = (LogEntry
                  .select()
                  .join(Employee)
@@ -188,7 +215,10 @@ class DBManager:
 
     def view_names_with_text(self, text_string):
         """Get all employee names where any of the text in the name matches
-        the specified text string"""
+        the specified text string.
+        
+        Returns them as a list of OrderedDicts.
+        """
         Employee.select(Employee.name).join(LogEntry).distinct()
         query = (Employee
                  .select(Employee.name)
@@ -200,10 +230,12 @@ class DBManager:
         return [OrderedDict([('name', record.name)]) for record in query]
 
     def view_everything(self, employee=None, date_sorted=False):
-        """get every field for every log entry
+        """Gets every field for every log entry.
         - Can optionally specify a particular employee name to filter by that
-        employee
-        - Can optionally sort by date
+        employee;
+        - Can optionally sort by date.
+
+        Returns a list of OrderedDicts.
         """
         if employee is not None:
             query = (LogEntry
@@ -217,9 +249,13 @@ class DBManager:
         return self.records_to_list(query)
 
     def view_entry(self, entry, return_model=False):
-        """returns a single entry
-        if return_model is set to True, returns a model instance,
-        otherwise returns OrderedDict"""
+        """Gets a single entry from the database that matches the 
+        specifications from entry.
+
+        Returns a single entry:
+        - if return_model is set to True, returns a model instance,
+        - otherwise returns OrderedDict
+        """
         print("attemping to access entry:")
         print("name: {}".format(entry["name"]))
         print("date: {}".format(entry["date"]))
@@ -264,7 +300,10 @@ class DBManager:
             return self.record_to_dict(log_entry_record)
 
     def delete_entry(self, entry):
-        """Delete the specified entry"""
+        """Delete the specified entry from the database.
+        
+        Returns True if successful, False if it fails.
+        """
         for key, value in entry.items():
             print("{}: {}".format(key, value))
         # Attempt to get log entry
@@ -277,8 +316,10 @@ class DBManager:
 
     # Helper Methods
     def record_to_dict(self, record):
-        """Takes a single record and returns an OrderedDict representing that
-        data"""
+        """Converts a value representing DB record into an OrderedDict.
+
+        Returns that OrderedDict.
+        """
         return OrderedDict([
             ('name', record.employee.name),
             ('date', record.date),
@@ -288,7 +329,11 @@ class DBManager:
         ])
 
     def records_to_list(self, records):
-        """Creates a list from a collection of records"""
+        """Converts a value representing a collection of DB records into a
+        list of OrderedDicts.
+
+        Returns that list of OrderedDicts.
+        """
         list = []
         for record in records:
             list.append(self.record_to_dict(record))
@@ -321,48 +366,3 @@ tables = [
     Employee,
     LogEntry,
 ]
-
-# -----------------------------
-
-if __name__ == "__main__":
-
-    log_entries = [
-        {'employee': 'lucy',
-         'date': '2015-07-07',
-         'task_name': 'be the original dog',
-         'duration': 1,
-         'notes': 'Very class dog'},
-        {'employee': 'rosie',
-         'date': '2018-01-03',
-         'task_name': 'be the most mischievous but loveable puppy',
-         'duration': 2,
-         'notes': 'Naughty but nice!'},
-    ]
-
-    def add_log_entries(log_entries_list):
-        for entry in log_entries_list:
-            dbm.add_entry(entry)
-
-    dbm = DBManager()
-    # menu_loop()
-
-    # Peewee ORM methods
-    # create a new instance 'all at once'
-    # .create()
-    # add_employees(employees)
-    add_log_entries(log_entries)
-
-    # retrieve records in table
-    # .select()
-
-    # retrieve a single record
-    # .get()
-
-    # update a row in table
-    # .save()
-
-    # remove a record
-    # .delete_instance()
-
-    # specify sort criteria
-    # .order_by()
