@@ -261,7 +261,6 @@ class DBManager:
         except:
             return False
 
-
     # Helper Methods
     def record_to_dict(self, record):
         """Takes a single record and returns an OrderedDict representing that
