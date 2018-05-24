@@ -79,13 +79,13 @@ class DBManagerTests(unittest.TestCase):
         """
         self.set_test_database()
         
-        test_employee_data = {'name': 'test user'}
+        test_employee_data = {'name': 'test user (add)'}
         test_log_entry_data = {
             'name' : test_employee_data['name'],
             'date' : datetime.date(2018,1,1),
-            'task_name' : 'test_entry',
+            'task_name' : 'test_entry_add_entry',
             'duration' : 17,
-            'notes' : 'This is a test',
+            'notes' : 'This is a test of adding an entry',
         }
         
         dbm = db_manager.DBManager()
@@ -103,13 +103,49 @@ class DBManagerTests(unittest.TestCase):
     def test_edit_entry_correctly_changes_record(self):
         self.set_test_database()
 
-        # load dbm
+        dbm = db_manager.DBManager()
+        
         # create a database entry (to change)
+        test_employee_data = {'name': 'test user (edit)'}
+        test_log_entry_data = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2018,1,1),
+            'task_name' : 'test_entry_edit_entry',
+            'duration' : 18,
+            'notes' : 'This is a test of editing an entry'
+        }
+        employee_record = db_manager.Employee.get_or_create(
+            name=test_employee_data["name"]
+        )
+        logentry_record = db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data["date"],
+            task_name=test_log_entry_data["task_name"],
+            duration=test_log_entry_data["duration"],
+            notes=test_log_entry_data["notes"],
+        )
+
         # specify changed entry
+        edited_employee_data = {'name': 'test user (edited)'}
+        edited_log_entry_data = {
+            'name' : edited_employee_data['name'],
+            'date' : datetime.date(2017,2,2),
+            'task_name' : 'test_entry_edit_entry (edited)',
+            'duration' : 28,
+            'notes' : 'This is a test of editing an entry (edited)',
+        }
+        
         # write changes to database using dbm method
-        # read record back from database
+        dbm.edit_entry(test_log_entry_data, edited_log_entry_data)
+        
+        # read record back from database &
         # convert record to dict
+        retrieved_log_entry_dict = self.retrieve_database_entry(
+            edited_log_entry_data
+        )
+        
         # check changed record == changed entry
+        self.assertEqual(edited_log_entry_data, retrieved_log_entry_dict)
 
         self.revert_database()
 
