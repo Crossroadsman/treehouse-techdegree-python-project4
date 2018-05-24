@@ -248,9 +248,7 @@ class Menu:
             del(inputs['p'])
         if self.current_record == len(self.records) - 1:
             del(inputs['n'])
-        print("\nResult {}".format(self.current_record + 1))
         record = self.records[self.current_record]
-        print("this is the record: {}".format(record))
         self.display_entry(record, verbose=True)
 
         print("\nAvailable actions:")
@@ -290,14 +288,12 @@ class Menu:
                 continue
             try:
                 selected_employee = employee_names[user_input]['name']
-                print(selected_employee)
             except IndexError:
                 print("Value out of range. Try again.")
                 continue
             # when an employee is selected, show all the entries with that e'ee
             matching_records = dbm.view_everything(employee=selected_employee)
         self.records = matching_records
-        print(self.records)
         self.current_record = 0
         return self.present_next_result
 
@@ -328,14 +324,12 @@ class Menu:
                 continue
             try:
                 selected_employee = employee_names[user_input]['name']
-                print(selected_employee)
             except IndexError:
                 print("Value out of range. Try again.")
                 continue
             # when an employee is selected, show all the entries with that e'ee
             matching_records = dbm.view_everything(employee=selected_employee)
         self.records = matching_records
-        print(self.records)
         self.current_record = 0
         return self.present_next_result
 
