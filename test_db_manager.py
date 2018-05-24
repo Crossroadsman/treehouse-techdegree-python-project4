@@ -50,7 +50,12 @@ class DBManagerTests(unittest.TestCase):
         
     # add_entry
     def test_add_entry_creates_valid_db_entry(self):
-        """Check that data is correctly written to database"""
+        """Check that data is correctly written to database
+        
+        Note, because this test involves writing to the database it switches
+        out the database file, using a dedicated 'unittest.db' database file.
+        At the end of the test it switches back to the live database.
+        """
         self.set_test_database()
         
         test_employee_data = {'name': 'test user'}
