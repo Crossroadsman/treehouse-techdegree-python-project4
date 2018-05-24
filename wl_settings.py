@@ -1,5 +1,6 @@
-# DATABASE_NAME = 'test.db'
-DATABASE_NAME = 'work_log.db'
+LIVE_DATABASE_NAME = 'work_log.db'
+UNITTEST_DATABASE_NAME = 'unittest.db'
+DATABASE_NAME = LIVE_DATABASE_NAME
 
 HEADERS = {
         'user': 'name',
