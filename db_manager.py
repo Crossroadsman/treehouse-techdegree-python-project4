@@ -32,14 +32,12 @@ class DBManager:
         to do a query
         """
         try:
-            db.connect()
+            # reuse_if_open -> prevents connection already open error
+            db.connect(reuse_if_open=True)
         except OperationalError as err:
-            if err == "Connection already opened.":
-                print('connection open, skipping connect()')
-            else:
-                print("operational error!")
-                print("detailed error information:")
-                print(err)
+            print("operational error!")
+            print("detailed error information:")
+            print(err)
         db.create_tables(tables, safe=True)
 
     def add_entry(self, entry):
@@ -47,7 +45,6 @@ class DBManager:
         
         The entry should be in the form of a dict or OrderedDict.
         """
-        print(entry)
         try:
             employee_record = Employee.get(Employee.name == entry["name"])
         except DoesNotExist:
@@ -91,7 +88,6 @@ class DBManager:
 
         Returns the new record as an OrderedDict.
         """
-        print(entry)
         # first make sure that the Employee exists and can be retrieved
         try:
             employee_record = Employee.get(Employee.name == entry["name"])
@@ -256,12 +252,6 @@ class DBManager:
         - if return_model is set to True, returns a model instance,
         - otherwise returns OrderedDict
         """
-        print("attemping to access entry:")
-        print("name: {}".format(entry["name"]))
-        print("date: {}".format(entry["date"]))
-        print("task_name: {}".format(entry["task_name"]))
-        print("duration: {}".format(entry["duration"]))
-        print("notes: {}".format(entry["notes"]))
         # first make sure that the Employee exists and can be retrieved
         try:
             employee_record = Employee.get(Employee.name == entry["name"])
@@ -304,8 +294,6 @@ class DBManager:
         
         Returns True if successful, False if it fails.
         """
-        for key, value in entry.items():
-            print("{}: {}".format(key, value))
         # Attempt to get log entry
         log_entry = self.view_entry(entry, return_model=True)
         try:
