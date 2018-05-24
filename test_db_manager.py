@@ -9,6 +9,8 @@ import wl_settings as settings
 
 class DBManagerTests(unittest.TestCase):
 
+    # Helper Methods
+    # --------------
     def set_test_database(self):
         """Switch out the regular database and switch in a unittest-only
         database"""
@@ -21,14 +23,32 @@ class DBManagerTests(unittest.TestCase):
         db_manager.db = SqliteDatabase(settings.LIVE_DATABASE_NAME)
         db_manager.Employee._meta.database = db_manager.db
         db_manager.LogEntry._meta.database = db_manager.db
-
-
-    def test_five_plus_five(self):
-        assert 5 + 5 == 10
     
-    def test_one_plus_one(self):
-        assert not 1 + 1 == 3
+    def retrieve_database_entry(self, record):
+        """Gets a DB record and returns the values as a dict"""
+        retrieved_employee = db_manager.Employee.get(
+            db_manager.Employee.name == record['name']
+        )
+        retrieved_log_entry = db_manager.LogEntry.get(
+            db_manager.LogEntry.employee == retrieved_employee,
+            db_manager.LogEntry.date == record["date"],
+            db_manager.LogEntry.task_name == record["task_name"],
+            db_manager.LogEntry.duration == record["duration"],
+            db_manager.LogEntry.notes == record["notes"]
+        )
+        retrieved_log_entry_dict = {
+            'name': retrieved_log_entry.employee.name,
+            'date': retrieved_log_entry.date,
+            'task_name': retrieved_log_entry.task_name,
+            'duration': retrieved_log_entry.duration,
+            'notes': retrieved_log_entry.notes,
+        }
+        return retrieved_log_entry_dict
 
+
+    # Example tests
+    # -------------
+    '''
     def test_assertcountequal(self):
         """This is just a quick illustration of 
         `self.assertCountEqual(a, b)` : check a and b have the same number of
@@ -47,6 +67,7 @@ class DBManagerTests(unittest.TestCase):
         self.assertEqual(od, d)
         self.assertNotEqual(od, d2)
         self.assertNotEqual(od, d3)
+    '''
         
     # add_entry
     def test_add_entry_creates_valid_db_entry(self):
@@ -68,30 +89,29 @@ class DBManagerTests(unittest.TestCase):
         }
         
         dbm = db_manager.DBManager()
+        # this is the actual transaction being tested:
         dbm.add_entry(test_log_entry_data)
 
-        retrieved_employee = db_manager.Employee.get(
-            db_manager.Employee.name == test_employee_data['name']
+        retrieved_log_entry_dict = self.retrieve_database_entry(
+            test_log_entry_data
         )
-        retrieved_log_entry = db_manager.LogEntry.get(
-            db_manager.LogEntry.employee == retrieved_employee,
-            db_manager.LogEntry.date == test_log_entry_data["date"],
-            db_manager.LogEntry.task_name == test_log_entry_data["task_name"],
-            db_manager.LogEntry.duration == test_log_entry_data["duration"],
-            db_manager.LogEntry.notes == test_log_entry_data["notes"]
-        )
-        retrieved_log_entry_dict = {
-            'name': retrieved_log_entry.employee.name,
-            'date': retrieved_log_entry.date,
-            'task_name': retrieved_log_entry.task_name,
-            'duration': retrieved_log_entry.duration,
-            'notes': retrieved_log_entry.notes,
-        }
         self.assertEqual(test_log_entry_data, retrieved_log_entry_dict)
 
         self.revert_database()
     
     # edit_entry
+    def test_edit_entry_correctly_changes_record(self):
+        self.set_test_database()
+
+        # load dbm
+        # create a database entry (to change)
+        # specify changed entry
+        # write changes to database using dbm method
+        # read record back from database
+        # convert record to dict
+        # check changed record == changed entry
+
+        self.revert_database()
 
     # view_employees
 
