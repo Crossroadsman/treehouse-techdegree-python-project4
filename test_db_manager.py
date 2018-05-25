@@ -636,7 +636,7 @@ class DBManagerTests(unittest.TestCase):
         test string are returned and no entries that do not have the test
         string in the name field are returned
         """
-        data = self.create_test_dates()['test_log_entry_data']
+        data = self.create_test_employees()['test_employee_data']
         pattern = 'second'
         matching_data = []
         for datum in data:
@@ -648,6 +648,16 @@ class DBManagerTests(unittest.TestCase):
         self.assertCountEqual(matching_data, records)
 
     # view_everything
+    def test_view_everything_returns_all_records(self):
+        """Ensure that all entries are returned."""
+        data = self.create_test_dates()['test_log_entry_data']
+
+        records = self.dbm.view_everything()
+        records = [dict(entry) for entry in records]
+        
+        self.assertEqual(len(data), len(records))
+        for datum in data:
+            self.assertIn(datum, records)
 
     # view_entry
 
