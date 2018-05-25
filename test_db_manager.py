@@ -660,8 +660,55 @@ class DBManagerTests(unittest.TestCase):
             self.assertIn(datum, records)
 
     # view_entry
+    def test_view_entry_returns_correct_record(self):
+        """Ensure that the correct entry is returned."""
+        data = self.create_mixed_test_data()['test_log_entry_1']
+
+        record = self.dbm.view_entry(data)
+
+        self.assertEqual(data, record)
 
     # delete_entry
+    def test_delete_entry_removes_the_specified_record(self):
+        """Ensure that a) the specified record is removed and b) only
+        the specified record is removed.
+        """
+        data = self.create_mixed_test_data()
+        datum_to_delete = data['test_log_entry_1']
+
+        records_before_deletion = db_manager.LogEntry.select()
+        number_records_before_deletion = len(records_before_deletion)
+
+        # Make sure we can get the record before we delete it
+        employee = db_manager.Employee.get(name=datum_to_delete['name'])
+        db_manager.LogEntry.get(
+                employee=employee,
+                task_name=datum_to_delete['task_name'],
+                date=datum_to_delete['date'],
+                notes=datum_to_delete['notes'],
+                duration=datum_to_delete['duration']
+        )
+
+        # Delete the record
+        self.dbm.delete_entry(datum_to_delete)
+
+        records_after_deletion = db_manager.LogEntry.select()
+        number_records_after_deletion = len(records_after_deletion)
+
+        # Make sure that only one record was deleted
+        self.assertEqual(number_records_before_deletion - 1, 
+                         number_records_after_deletion)
+
+        # Make sure that we now get DoesNotExist when we try to get the
+        # deleted record
+        with self.assertRaises(DoesNotExist):
+            db_manager.LogEntry.get(
+                employee=employee,
+                task_name=datum_to_delete['task_name'],
+                date=datum_to_delete['date'],
+                notes=datum_to_delete['notes'],
+                duration=datum_to_delete['duration']
+            )
 
     # record_to_dict
 
