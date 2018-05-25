@@ -1,5 +1,6 @@
 import unittest
 import datetime
+from collections import OrderedDict
 
 from peewee import *
 
@@ -430,7 +431,9 @@ class DBManagerTests(unittest.TestCase):
         self.assertNotEqual(od, d2)
         self.assertNotEqual(od, d3)
     '''
-        
+
+    # Actual tests
+    # ------------
     # add_entry
     def test_add_entry_creates_valid_db_entry(self):
         """Check that data is correctly written to database"""
@@ -711,8 +714,73 @@ class DBManagerTests(unittest.TestCase):
             )
 
     # record_to_dict
+    def test_record_to_dict_returns_orderedDict_matching_record(self):
+        """Ensure that the returned object has the same elements as the record.
+
+        Check by getting a particular record from the database, getting the OD
+        from that record then attempt to get the same record from the database
+        using the values from the OD
+        """
+        data = self.create_mixed_test_data()
+        log_entry_data = data['test_log_entry_1']
+
+        employee = db_manager.Employee.get(name=log_entry_data['name'])
+        log_entry = db_manager.LogEntry.get(
+            employee=employee,
+            task_name=log_entry_data['task_name'],
+            date=log_entry_data['date'],
+            notes=log_entry_data['notes'],
+            duration=log_entry_data['duration']
+        )
+
+        ordered_dict = self.dbm.record_to_dict(log_entry)
+
+        employee_from_od = db_manager.Employee.get(
+            name=ordered_dict['name']
+        )
+        log_entry_from_od = db_manager.LogEntry.get(
+            employee=employee_from_od,
+            task_name=ordered_dict['task_name'],
+            date=ordered_dict['date'],
+            notes=ordered_dict['notes'],
+            duration=ordered_dict['duration']
+        )
+
+        self.assertEqual(log_entry, log_entry_from_od)
+
+
+    def test_record_to_dict_returns_orderedDict(self):
+        """Ensure that the returned collection is actually of type OrderedDict.
+        """
+        data = self.create_mixed_test_data()
+        log_entry_data = data['test_log_entry_1']
+
+        employee = db_manager.Employee.get(name=log_entry_data['name'])
+        log_entry = db_manager.LogEntry.get(
+            employee=employee,
+            task_name=log_entry_data['task_name'],
+            date=log_entry_data['date'],
+            notes=log_entry_data['notes'],
+            duration=log_entry_data['duration']
+        )
+
+        ordered_dict = self.dbm.record_to_dict(log_entry)
+
+        self.assertIsInstance(ordered_dict, OrderedDict)
 
     # records_to_list
+    def test_records_to_list_returns_list_matching_records(self):
+        """Ensure that the list has the same elements as the collection of
+        records."""
+        data = self.create_mixed_test_data()
+
+        entries = db_manager.LogEntry.select()
+        number_of_entries = len(entries)
+
+        list_of_ods = self.dbm.records_to_list(entries)
+        number_in_list = len(list_of_ods)
+
+        self.assertEqual(number_of_entries, number_in_list)
 
 if __name__ == "__main__":
     unittest.main()
