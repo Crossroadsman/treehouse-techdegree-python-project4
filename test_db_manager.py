@@ -79,7 +79,7 @@ class DBManagerTests(unittest.TestCase):
 
     def create_mixed_test_data(self):
         """Creates four users and two log entries and writes them to the DB
-        then returns a dictionary containing the users
+        then returns a dictionary containing the users and log entries
         """
         # create 4 employees (2 with log entries, 2 without)
         test_employee_le_1_data = {'name': 'test user 1 (l.e.)'}
@@ -135,6 +135,175 @@ class DBManagerTests(unittest.TestCase):
             'test_employee_nle_2': test_employee_nle_2_data,
             'test_log_entry_1': test_log_entry_data_1,
             'test_log_entry_2': test_log_entry_data_2
+        }
+
+    def create_test_dates(self):
+        """Creates one user and five log entries and writes them to the DB
+        then returns a dictionary containing the user and log entries
+        """
+        # create 1 employee
+        test_employee_data = {'name': 'date test user'}
+        # create 5 log entries (4 unique dates and 1 duplicated)
+        test_log_entry_data_1 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(1999,1,15),
+            'task_name' : 'test_date_entry',
+            'duration' : 10,
+            'notes' : 'This is for testing retrieval by date'
+        }
+        test_log_entry_data_2 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2010,5,25),
+            'task_name' : 'test_date_entry',
+            'duration' : 20,
+            'notes' : 'This is for testing retrieval by date'
+        }
+        test_log_entry_data_3 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2018,11,30),
+            'task_name' : 'test_date_entry',
+            'duration' : 30,
+            'notes' : 'This is for testing retrieval by date'
+        }
+        test_log_entry_data_4 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2010,5,25),
+            'task_name' : 'test_date_entry',
+            'duration' : 40,
+            'notes' : 'This is for testing retrieval by date'
+        }
+        test_log_entry_data_5 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2015,12,1),
+            'task_name' : 'test_date_entry',
+            'duration' : 50,
+            'notes' : 'This is for testing retrieval by date'
+        }
+        # write the test data to the database
+        employee_record = db_manager.Employee.get_or_create(
+            name=test_employee_data["name"]
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_1["date"],
+            task_name=test_log_entry_data_1["task_name"],
+            duration=test_log_entry_data_1["duration"],
+            notes=test_log_entry_data_1["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_2["date"],
+            task_name=test_log_entry_data_2["task_name"],
+            duration=test_log_entry_data_2["duration"],
+            notes=test_log_entry_data_2["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_3["date"],
+            task_name=test_log_entry_data_3["task_name"],
+            duration=test_log_entry_data_3["duration"],
+            notes=test_log_entry_data_3["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_4["date"],
+            task_name=test_log_entry_data_4["task_name"],
+            duration=test_log_entry_data_4["duration"],
+            notes=test_log_entry_data_4["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_5["date"],
+            task_name=test_log_entry_data_5["task_name"],
+            duration=test_log_entry_data_5["duration"],
+            notes=test_log_entry_data_5["notes"],
+        )
+        return {
+            'test_employee_data': test_employee_data,
+            'test_log_entry_data': [
+                test_log_entry_data_1,
+                test_log_entry_data_2,
+                test_log_entry_data_3,
+                test_log_entry_data_4,
+                test_log_entry_data_5
+            ]
+        }
+    
+    def create_test_durations(self):
+        """Creates one user and four log entries and writes them to the DB
+        then returns a dictionary containing the user and log entries
+        """
+        # create 1 employee
+        test_employee_data = {'name': 'duration test user'}
+        # create 4 log entries (3 unique durations and 1 duplicated)
+        test_log_entry_data_1 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(1999,1,15),
+            'task_name' : 'test_duration_entry',
+            'duration' : 10,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        test_log_entry_data_2 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2010,5,25),
+            'task_name' : 'test_duration_entry',
+            'duration' : 20,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        test_log_entry_data_3 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2018,11,30),
+            'task_name' : 'test_duration_entry',
+            'duration' : 30,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        test_log_entry_data_4 = {
+            'name' : test_employee_data['name'],
+            'date' : datetime.date(2010,5,25),
+            'task_name' : 'test_duration_entry',
+            'duration' : 20,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        # write the test data to the database
+        employee_record = db_manager.Employee.get_or_create(
+            name=test_employee_data["name"]
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_1["date"],
+            task_name=test_log_entry_data_1["task_name"],
+            duration=test_log_entry_data_1["duration"],
+            notes=test_log_entry_data_1["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_2["date"],
+            task_name=test_log_entry_data_2["task_name"],
+            duration=test_log_entry_data_2["duration"],
+            notes=test_log_entry_data_2["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_3["date"],
+            task_name=test_log_entry_data_3["task_name"],
+            duration=test_log_entry_data_3["duration"],
+            notes=test_log_entry_data_3["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record[0],
+            date=test_log_entry_data_4["date"],
+            task_name=test_log_entry_data_4["task_name"],
+            duration=test_log_entry_data_4["duration"],
+            notes=test_log_entry_data_4["notes"],
+        )
+        return {
+            'test_employee_data': test_employee_data,
+            'test_log_entry_data': [
+                test_log_entry_data_1,
+                test_log_entry_data_2,
+                test_log_entry_data_3,
+                test_log_entry_data_4
+            ]
         }
 
     # Setup and Teardown
@@ -273,14 +442,85 @@ class DBManagerTests(unittest.TestCase):
 
         self.assertNotEqual(employee_records, employees_nle)
 
-
     # view_dates
+    def test_view_dates_returns_all_dates(self):
+        """Ensure that every date in the test_data_set is returned
+        
+        We can test this by checking that the length of the returned
+        iterable of dates is equal to the number of unique dates in
+        the test dataset (we have a separate test to ensure no duplicates)
+        """
+        test_data = self.create_test_dates()
+        dates = [entry['date'] for entry in test_data['test_log_entry_data']]
+        unique_dates = set(dates)
+        unique_date_count = len(unique_dates)
+
+        records = self.dbm.view_dates()
+
+        self.assertEqual(unique_date_count, len(records))
+
+    def test_view_dates_returns_no_duplicates(self):
+        """Ensure that no duplicate dates are returned.
+        
+        We know that there are no duplicates if the length of the iterable
+        containing the dates is the same as the set of the iterable containing
+        the dates
+        """
+        self.create_test_dates()
+
+        records = self.dbm.view_dates()
+
+        dates = []
+        for record in records:
+            dates.append(record['date'])
+        
+        self.assertEqual(len(set(dates)), len(dates))
 
     # view_entries_for_date
+    def test_view_entries_for_date_returns_all_matches(self):
+        """Ensure that all the entries with a date matching the query
+        are returned ad no entries with a date not matching the query
+        are returned.
+        """
+        data = self.create_test_dates()['test_log_entry_data']
+        date = data[1]['date'] # the duplicated date
+        matching_dates = [datum for datum in data if datum['date'] == date]
 
+        records = self.dbm.view_entries_for_date(date)
+
+        self.assertCountEqual(matching_dates, records)
+    
     # view_entries_for_duration
+    def test_view_entries_for_duration_returns_all_matches(self):
+        """Ensure that all the entries with a duration matching the query
+        are returned and no entries with a duration not matching the query
+        are returned.
+        """
+        data = self.create_test_durations()['test_log_entry_data']
+        duration = data[1]['duration'] # the duplicated date
+        matches = [datum for datum in data if datum['duration'] == duration]
+
+        records = self.dbm.view_entries_for_duration(duration)
+
+        self.assertCountEqual(matches, records)
 
     # view_entries_for_date_range
+    def test_view_entries_for_date_range_returns_all_matches(self):
+        """Ensure that all the entries with a date in the specified
+        range that match the query are returned and no entries with a date not 
+        matching the query are returned.
+        """
+        data = self.create_test_dates()['test_log_entry_data']
+        start = datetime.date(2010,5,25)
+        end = datetime.date(2015,12,1)
+        matching_dates = []
+        for datum in data:
+            if datum['date'] >= start and datum['date'] <= end:
+                matching_dates.append(datum)
+        
+        records = self.dbm.view_entries_for_date_range(start, end)
+
+        self.assertCountEqual(matching_dates, records)
 
     # view_entries_with_text
 
