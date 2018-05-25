@@ -156,28 +156,28 @@ class DBManagerTests(unittest.TestCase):
             'date' : datetime.date(2010,5,25),
             'task_name' : 'test_date_entry',
             'duration' : 20,
-            'notes' : 'This is for testing retrieval by date'
+            'notes' : 'This is also for testing retrieval by date'
         }
         test_log_entry_data_3 = {
             'name' : test_employee_data['name'],
             'date' : datetime.date(2018,11,30),
             'task_name' : 'test_date_entry',
             'duration' : 30,
-            'notes' : 'This is for testing retrieval by date'
+            'notes' : 'This is still for testing retrieval by date'
         }
         test_log_entry_data_4 = {
             'name' : test_employee_data['name'],
             'date' : datetime.date(2010,5,25),
             'task_name' : 'test_date_entry',
             'duration' : 40,
-            'notes' : 'This is for testing retrieval by date'
+            'notes' : 'This is still also for testing retrieval by date'
         }
         test_log_entry_data_5 = {
             'name' : test_employee_data['name'],
             'date' : datetime.date(2015,12,1),
             'task_name' : 'test_date_entry',
             'duration' : 50,
-            'notes' : 'This is for testing retrieval by date'
+            'notes' : 'This is yet still also for testing retrieval by date'
         }
         # write the test data to the database
         employee_record = db_manager.Employee.get_or_create(
@@ -298,6 +298,95 @@ class DBManagerTests(unittest.TestCase):
         )
         return {
             'test_employee_data': test_employee_data,
+            'test_log_entry_data': [
+                test_log_entry_data_1,
+                test_log_entry_data_2,
+                test_log_entry_data_3,
+                test_log_entry_data_4
+            ]
+        }
+
+    def create_test_employees(self):
+        """Creates three users and four log entries and writes them to the DB
+        then returns a dictionary containing the user and log entries
+        """
+        # create 1 employee
+        test_employee_1_data = {'name': 'employee test user'}
+        test_employee_2_data = {'name': 'second employee test user'}
+        test_employee_3_data = {'name': 'third test user'}
+        # create 4 log entries (3 unique users and 1 duplicated)
+        test_log_entry_data_1 = {
+            'name' : test_employee_1_data['name'],
+            'date' : datetime.date(1999,1,15),
+            'task_name' : 'test_duration_entry',
+            'duration' : 10,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        test_log_entry_data_2 = {
+            'name' : test_employee_2_data['name'],
+            'date' : datetime.date(2010,5,25),
+            'task_name' : 'test_duration_entry',
+            'duration' : 20,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        test_log_entry_data_3 = {
+            'name' : test_employee_3_data['name'],
+            'date' : datetime.date(2018,11,30),
+            'task_name' : 'test_duration_entry',
+            'duration' : 30,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        test_log_entry_data_4 = {
+            'name' : test_employee_2_data['name'],
+            'date' : datetime.date(2010,5,25),
+            'task_name' : 'test_duration_entry',
+            'duration' : 20,
+            'notes' : 'This is for testing retrieval by duration'
+        }
+        # write the test data to the database
+        employee_record_1 = db_manager.Employee.get_or_create(
+            name=test_employee_1_data["name"]
+        )
+        employee_record_2 = db_manager.Employee.get_or_create(
+            name=test_employee_2_data["name"]
+        )
+        employee_record_3 = db_manager.Employee.get_or_create(
+            name=test_employee_3_data["name"]
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record_1[0],
+            date=test_log_entry_data_1["date"],
+            task_name=test_log_entry_data_1["task_name"],
+            duration=test_log_entry_data_1["duration"],
+            notes=test_log_entry_data_1["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record_2[0],
+            date=test_log_entry_data_2["date"],
+            task_name=test_log_entry_data_2["task_name"],
+            duration=test_log_entry_data_2["duration"],
+            notes=test_log_entry_data_2["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record_3[0],
+            date=test_log_entry_data_3["date"],
+            task_name=test_log_entry_data_3["task_name"],
+            duration=test_log_entry_data_3["duration"],
+            notes=test_log_entry_data_3["notes"],
+        )
+        db_manager.LogEntry.create(
+            employee=employee_record_2[0],
+            date=test_log_entry_data_4["date"],
+            task_name=test_log_entry_data_4["task_name"],
+            duration=test_log_entry_data_4["duration"],
+            notes=test_log_entry_data_4["notes"],
+        )
+        return {
+            'test_employee_data': [
+                test_employee_1_data,
+                test_employee_2_data,
+                test_employee_3_data,
+            ],
             'test_log_entry_data': [
                 test_log_entry_data_1,
                 test_log_entry_data_2,
@@ -523,8 +612,40 @@ class DBManagerTests(unittest.TestCase):
         self.assertCountEqual(matching_dates, records)
 
     # view_entries_with_text
+    def test_view_entries_with_text_returns_all_matches(self):
+        """Ensure that all entries whose text fields contain the specified
+        test string are returned and no entries that do not have a text field
+        containing the test string are returned.
+        """
+        data = self.create_test_dates()['test_log_entry_data']
+        pattern = 'still'
+        matching_data = []
+        for datum in data:
+            if (pattern in datum['name'] or
+                pattern in datum['task_name'] or
+                pattern in datum['notes']):
+                matching_data.append(datum)
+
+        records = self.dbm.view_entries_with_text(pattern)
+
+        self.assertCountEqual(matching_data, records)
 
     # view_names_with_text
+    def test_view_names_with_text_returns_all_matches(self):
+        """Ensure that all entries whose name field contains the specified
+        test string are returned and no entries that do not have the test
+        string in the name field are returned
+        """
+        data = self.create_test_dates()['test_log_entry_data']
+        pattern = 'second'
+        matching_data = []
+        for datum in data:
+            if pattern in datum['name']:
+                matching_data.append(datum)
+
+        records = self.dbm.view_names_with_text(pattern)
+
+        self.assertCountEqual(matching_data, records)
 
     # view_everything
 
