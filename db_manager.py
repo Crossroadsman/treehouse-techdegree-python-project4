@@ -259,12 +259,7 @@ class DBManager:
             print("Employee Does not exist error!")
             print("detailed error information:")
             print(err)
-            raise
-        except IntegrityError as err:
-            print("Employee integrity error!")
-            print("detailed error information:")
-            print(err)
-            raise
+            raise err
         # next, make sure that the LogEntry record exists and can be retrieved
         try:
             log_entry_record = LogEntry.get(
@@ -278,29 +273,17 @@ class DBManager:
             print("Log Entry Does not exist error!")
             print("detailed error information:")
             print(err)
-            raise
-        except IntegrityError as err:
-            print("Log Entry integrity error!")
-            print("detailed error information:")
-            print(err)
-            raise
+            raise err
         if return_model:
             return log_entry_record
         else:
             return self.record_to_dict(log_entry_record)
 
     def delete_entry(self, entry):
-        """Delete the specified entry from the database.
-        
-        Returns True if successful, False if it fails.
-        """
-        # Attempt to get log entry
+        """Delete the specified entry from the database."""
         log_entry = self.view_entry(entry, return_model=True)
-        try:
-            log_entry.delete_instance()
-            return True
-        except:
-            return False
+        log_entry.delete_instance()
+        return True
 
     # Helper Methods
     def record_to_dict(self, record):

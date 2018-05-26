@@ -1,0 +1,4 @@
+[run]
+omit =
+    # omit anything that is part of the virtual environment
+    wl_env/*
