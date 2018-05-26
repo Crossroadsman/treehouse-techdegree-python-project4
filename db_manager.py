@@ -54,31 +54,13 @@ class DBManager:
             # If ever Employee ever becomes a more sophisticated model, we'll
             # need to go back to the user to get them to provide more info
             employee_record = Employee.create(name=entry["name"])
-        except IntegrityError as err:
-            # if unable to create a record because it would violate, e.g.,
-            # a UNIQUE constraint.
-            # Note this won't help us we accidentally try to add duplicate
-            # records that don't violate any constraints.
-
-            # current_record = LogEntry.get(<some unique field>)
-            # current_record.employee = entry['employee']
-            # <etc>
-            # current_record.save()
-            print("integrity error!")
-            print("detailed error information:")
-            print(err)
-        try:
-            LogEntry.create(
-                employee=employee_record,
-                date=entry["date"],
-                task_name=entry["task_name"],
-                duration=entry["duration"],
-                notes=entry["notes"],
-            )
-        except IntegrityError as err:
-            print("integrity error!")
-            print("detailed error information:")
-            print(err)
+        LogEntry.create(
+            employee=employee_record,
+            date=entry["date"],
+            task_name=entry["task_name"],
+            duration=entry["duration"],
+            notes=entry["notes"],
+        )
 
     def edit_entry(self, entry, new_value):
         """Edits an existing entry.
@@ -96,11 +78,6 @@ class DBManager:
             print("detailed error information:")
             print(err)
             raise
-        except IntegrityError as err:
-            print("Employee integrity error!")
-            print("detailed error information:")
-            print(err)
-            raise
         # next, make sure that the LogEntry record exists and can be retrieved
         try:
             log_entry_record = LogEntry.get(
@@ -112,11 +89,6 @@ class DBManager:
             )
         except DoesNotExist as err:
             print("Log Entry Does not exist error!")
-            print("detailed error information:")
-            print(err)
-            raise
-        except IntegrityError as err:
-            print("Log Entry integrity error!")
             print("detailed error information:")
             print(err)
             raise
