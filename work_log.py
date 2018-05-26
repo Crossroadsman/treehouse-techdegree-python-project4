@@ -267,7 +267,8 @@ class Menu:
     def search_employee(self):
         """This is the menu where the user is given a list of all employees
         who have entries, and can select a particular employee to see
-        all their entries"""
+        all their entries
+        """
         print("\nSEARCH BY EMPLOYEE")
         # load the db manager
         dbm = DBManager()

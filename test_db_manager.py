@@ -48,13 +48,6 @@ class DBManagerTests(unittest.TestCase):
         }
         return record_as_dict
 
-    '''
-    def db_employee_to_dict(self, record):
-        """Converts a DB record of an employee to a dict and returns it"""
-        record_as_dict = {'name': record.name}
-        return record_as_dict
-    '''
-    
     def retrieve_database_entry(self, data):
         """Gets a DB record and returns the values as a dict"""
         retrieved_employee = db_manager.Employee.get(
@@ -68,15 +61,6 @@ class DBManagerTests(unittest.TestCase):
             db_manager.LogEntry.notes == data["notes"]
         )
         return self.db_record_to_dict(retrieved_log_entry)
-
-    '''
-    def retrieve_employee(self, data):
-        """Gets a DB record of just an employee"""
-        retrieved_employee = db_manager.Employee.get(
-            db_manager.Employee.name == data['name']
-        )
-        return self.db_employee_to_dict(retrieved_employee)
-    '''
 
     def create_mixed_test_data(self):
         """Creates four users and two log entries and writes them to the DB
@@ -500,6 +484,12 @@ class DBManagerTests(unittest.TestCase):
         
         # check changed record == changed entry
         self.assertEqual(edited_log_entry_data, retrieved_log_entry_dict)
+    
+    def test_edit_entry_invalid_employee_raises_doesnotexist(self):
+        """Ensure that passing a missing employee raises doesnot exist"""
+        pass
+    
+    def test_edit_entry_invalid
 
     # view_employees
     def test_view_employees_returns_all_employees_who_have_entries(self):
