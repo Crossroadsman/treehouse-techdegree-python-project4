@@ -673,35 +673,50 @@ class DBManagerTests(unittest.TestCase):
     
     def test_view_entry_raises_DoesNotExist_for_missing_employee(self):
         """If an invalid employee is provided, should raise DoesNotExist"""
+        data = self.create_mixed_test_data()
         nonexistent_employee_name = "This employee does not exist"
 
+        real_log_entry = data['test_log_entry_1']
+
+        log_entry_with_nonexistent_employee = {
+            'name': nonexistent_employee_name,
+            'date': real_log_entry['date'],
+            'task_name': real_log_entry['task_name'],
+            'duration': real_log_entry['duration'],
+            'notes': real_log_entry['notes']
+        }
         with self.assertRaises(DoesNotExist):
-            db_manager.Employee.get(name=nonexistent_employee_name)
+            self.dbm.view_entry(log_entry_with_nonexistent_employee)
 
     def test_view_entry_raises_DoesNotExist_for_missing_log_entry(self):
         """If an invalid logentry is provided, should raise DoesNotExist"""
         data = self.create_mixed_test_data()
         real_employee_data = data['test_employee_le_1']
 
+        real_employee = db_manager.Employee.get(
+            name=real_employee_data['name']
+        )
+        
         nonexistent_logentry_data = {
-            'employee': real_employee_data,
+            'name': real_employee.name,
             'date': datetime.date(2018,1,1),
             'task_name': "Non-existent task for non-existent logentry",
             'duration': 1,
             'notes': "Non-existent note for non-existent logentry"
         }
-        real_employee_record = db_manager.Employee.get(
-            name=real_employee_data['name']
-        )
+        #real_employee_record = db_manager.Employee.get(
+        #    name=real_employee_data['name']
+        #)
 
         with self.assertRaises(DoesNotExist):
-            db_manager.LogEntry.get(
-                employee=real_employee_record,
-                task_name=nonexistent_logentry_data['task_name'],
-                date=nonexistent_logentry_data['date'],
-                notes=nonexistent_logentry_data['notes'],
-                duration=nonexistent_logentry_data['duration']
-            )
+            self.dbm.view_entry(nonexistent_logentry_data)
+            #db_manager.LogEntry.get(
+            #    employee=real_employee_record,
+            #    task_name=nonexistent_logentry_data['task_name'],
+            #    date=nonexistent_logentry_data['date'],
+            #    notes=nonexistent_logentry_data['notes'],
+            #    duration=nonexistent_logentry_data['duration']
+            #)
 
     # delete_entry
     def test_delete_entry_removes_the_specified_record(self):
