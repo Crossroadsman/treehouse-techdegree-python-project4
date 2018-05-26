@@ -312,7 +312,6 @@ class DBManager:
 
 # -- Database Model Classes --
 
-
 class Employee(Model):
     """This is the class to represent an employee"""
     name = CharField(max_length=255)

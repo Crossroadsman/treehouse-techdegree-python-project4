@@ -661,6 +661,44 @@ class DBManagerTests(unittest.TestCase):
         self.assertEqual(len(data), len(records))
         for datum in data:
             self.assertIn(datum, records)
+    
+    def test_view_everything_sorted_returns_sorted_results(self):
+        """When date_sorted=True, ensure that the results are sorted
+        in ascending date order.
+        """
+        # create test db records
+        data = self.create_test_dates()
+        log_entries = data['test_log_entry_data']
+        dates = [log_entry['date'] for log_entry in log_entries]
+        sorted_dates = sorted(dates)
+
+        # pull the records from the database
+        records = self.dbm.view_everything(date_sorted=True)
+
+        # transform the db result into a list of dates
+        record_dates = [record['date'] for record in records]
+
+        # assert that the order of dates == the order from the dataset
+        self.assertEqual(sorted_dates, record_dates)
+    
+    def test_view_everything_employee_filters_by_employee(self):
+        """When employee is not set to None, ensure that returned records
+        are only for the specified employee
+        """
+        # load mixed_data into db
+        data = self.create_test_employees()
+        employee = data['test_employee_data'][1] # duplicated employee
+
+        # view_everything with duplicated employee
+        records = self.dbm.view_everything(employee=employee['name'])
+
+        # check that the length of the returned records == number of
+        #   elements in dataset with that employee
+        self.assertEqual(len(records), 2)
+        
+        # check that all returned records are for that employee
+        for record in records:
+            self.assertEqual(record['name'], employee['name'])
 
     # view_entry
     def test_view_entry_returns_correct_record(self):
