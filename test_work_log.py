@@ -1,3 +1,5 @@
+import io
+import sys
 import unittest
 from unittest.mock import patch
 # (see: https://dev.to/patrnk/how-to-test-input-processing-in-python-3)
@@ -159,10 +161,61 @@ class MenuTests(unittest.TestCase):
         
 
     # search_entries
+    def test_search_entries_returns_correct_menu(self):
+        """Ensure that the search_entries menu loads the correct menu in
+        response to user input.
+        """
+        user_inputs = {
+            'l': self.menu.search_employee,
+            'e': self.menu.search_employee_text,
+            'd': self.menu.search_exact_date,
+            'r': self.menu.search_date_range,
+            't': self.menu.search_time_spent,
+            's': self.menu.search_text_search,
+            'b': self.menu.main_menu,
+        }
+        results = []
+        expected_results = []
+        for key, value in user_inputs.items():
+            expected_results.append(value)
+            with patch('builtins.input', side_effect=key):
+                results.append(self.menu.search_entries())
+        
+        self.assertEqual(expected_results, results)
 
     # quit_program
+    def test_quit_program_sets_quit_status_to_true(self):
+        """Ensure that the quit function sets the program's quit state to
+        True
+        """
+        self.menu.quit_program()
+        self.assertTrue(self.menu.quit)
 
     # present_results
+    def test_present_results_displays_results(self):
+        
+        # Create a StringIO object to be a capture object
+        captured_output = io.StringIO()
+        # point stdout at the capture object
+        sys.stdout = captured_output
+
+        # Do anything that's going to have a print statement
+        self.menu.quit_program()
+
+        # Revert stdout (captured_output still holds the captured items)
+        sys.stdout = sys.__stdout__
+
+        # Do any other test code (e.g., asserts)
+        self.assertEqual("Quitting\n", captured_output.getvalue())
+
+        
+
+    def test_present_results_loads_correct_next_menu(self):
+        # this can be just like the previous tests that return menus
+        # with the only wrinkle that we need to handle the different 
+        # values for self.menu.current_page_start do determine whether
+        # next or previous menus are available
+        pass
 
     # present_next_result
 
