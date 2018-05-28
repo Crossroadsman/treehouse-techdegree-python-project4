@@ -25,7 +25,7 @@ class Menu:
 
     # INITIALIZER
     # -----------
-    def __init__(self):
+    def __init__(self, load_menu=True):
         """Instantiates the app, applies default settings and launches the
         main menu.
         """
@@ -41,10 +41,10 @@ class Menu:
         }
         self.current_record = 0
         self.current_page_start = 0
-
-        menu = self.main_menu()
-        while not self.quit:
-            menu = menu()
+        if load_menu:
+            menu = self.main_menu()
+            while not self.quit:
+                menu = menu()
 
     # MENU METHODS
     # ------------
@@ -68,10 +68,9 @@ class Menu:
             for key, value in inputs.items():
                 print("{}) {}".format(key, value['text']))
             user_entry = input("> ").lower()
-
+            print(user_entry)
             if user_entry not in inputs.keys():
                 continue
-
             return inputs[user_entry]['function']
 
     def add_entry(self):

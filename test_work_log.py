@@ -1,4 +1,6 @@
 import unittest
+from unittest.mock import patch
+# (see: https://dev.to/patrnk/how-to-test-input-processing-in-python-3)
 
 import work_log
 
@@ -11,7 +13,7 @@ class MenuTests(unittest.TestCase):
     # Setup and Teardown
     # ------------------
     def setUp(self):
-        pass
+        self.menu = work_log.Menu(load_menu=False)
     
     def tearDown(self):
         pass
@@ -28,6 +30,23 @@ class MenuTests(unittest.TestCase):
     # ------------
 
     # main_menu
+    def test_main_menu_add_entry_returns_add_entry(self):
+        """Ensure that the main menu loads the correct menu in response to
+        user input."""
+        user_inputs = {
+            'a': self.menu.add_entry,
+            's': self.menu.search_entries,
+            'o': self.menu.options,
+            'q': self.menu.quit_program,
+        }
+        results = []
+        expected_results = []
+        for key, value in user_inputs.items():
+            expected_results.append(value)
+            with patch('builtins.input', side_effect=key):
+                results.append(self.menu.main_menu())
+        
+        self.assertEqual(expected_results, results)
 
     # add_entry
 
