@@ -14,7 +14,8 @@ class DBManagerTests(unittest.TestCase):
     # --------------
     def set_test_database(self):
         """Switch out the regular database and switch in a unittest-only
-        database"""
+        database
+        """
         db_manager.db = SqliteDatabase(settings.UNITTEST_DATABASE_NAME)
         db_manager.Employee._meta.database = db_manager.db
         db_manager.LogEntry._meta.database = db_manager.db
