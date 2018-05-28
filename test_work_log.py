@@ -47,7 +47,6 @@ class MenuTests(unittest.TestCase):
         db_manager.Employee._meta.database = db_manager.db
         db_manager.LogEntry._meta.database = db_manager.db
 
-
     # Setup and Teardown
     # ------------------
     def setUp(self):
@@ -119,7 +118,7 @@ class MenuTests(unittest.TestCase):
         ]
         self.assertEqual(example_inputs, record_data)
 
-    def test_add_entry_returns_main_returns_main_menu(self):
+    def test_add_entry_returns_main_menu(self):
         """Ensure that the add_entry menu finishes by returning main_menu
         """
         example_inputs = [
@@ -134,8 +133,30 @@ class MenuTests(unittest.TestCase):
         
         self.assertEqual(returned_menu, self.menu.main_menu)
         
-
     # options
+    def test_options_date_format_choice_updates_settings(self):
+        """Ensure that the options menu sets the correct settings in response
+        to user input.
+        """
+        user_inputs = settings.DATE_FORMATS.keys()
+        results = []
+        expected_results = list(settings.DATE_FORMATS.values())
+        for i in range(1, len(user_inputs) + 1):
+            with patch('builtins.input', side_effect=str(i)):
+                self.menu.options()
+                results.append(self.menu.OPTIONS['date format'])
+        
+        self.assertEqual(results, expected_results)        
+    
+    def test_options_returns_main_menu(self):
+        """Ensure that the options menu finishes by returning main_menu
+        """
+        example_input = '1'
+        with patch('builtins.input', side_effect=example_input):
+            returned_menu = self.menu.options()
+        
+        self.assertEqual(returned_menu, self.menu.main_menu)
+        
 
     # search_entries
 
