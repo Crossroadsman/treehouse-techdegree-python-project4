@@ -433,14 +433,14 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_output, captured_output.getvalue())
 
     def test_present_next_result_loads_correct_next_menu(self):
+        """Ensure that the correct next menu is loaded.
+        """
         # this can be just like the previous tests that return menus
         # with the only wrinkle that we need to handle the different 
         # values for self.menu.current_page_start do determine whether
         # next or previous menus are available
         # Add an entry to the database
-        """Ensure that what is displayed to the user is what we expect to
-        be displayed to the user.
-        """
+        
         # to test this we don't actually need to write to the database,
         # we just need a list of ordered_dicts in menu.records
         test_records = [
@@ -466,7 +466,6 @@ class MenuTests(unittest.TestCase):
                 ('notes', 'This is a note for the third test task')
             ]),
         ]
-        old_entries_per_page = self.menu.OPTIONS['entries per page']
         self.menu.records = test_records
         self.menu.current_record = 1
         user_inputs = {
@@ -488,6 +487,76 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_results, results)
         
     # search_employee
+    def test_search_employee_displays_employee_names(self):
+        """Ensure that what is displayed to the user is what we expect to
+        be displayed to the user.
+        """
+        # add some employees to the database
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1"},
+            {'id': 2, 'name': "Test Employee 2"}
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            # give each employee an associated logentry
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=datetime.date(2018,1,2),
+                task_name='Test task {}'.format(employee['id']),
+                duration=employee['id'],
+                notes='Note'
+            )
+
+        title = "\nSEARCH BY EMPLOYEE" + "\n"
+        employee_rows = ""
+        for employee in test_employees:
+            employee_rows += "{}) {}\n".format(employee['id'], 
+                                               employee['name'])
+        
+        expected_output = (title +
+                           employee_rows)
+
+        # Create a StringIO object to be a capture object
+        captured_output = io.StringIO()
+        # point stdout at the capture object
+        sys.stdout = captured_output
+        # Do anything that's going to have a print statement
+        # (these will be accumulated in the captured_output object)
+        example_input = '1'
+        with patch('builtins.input', side_effect=example_input):
+            self.menu.search_employee()
+
+        # Revert stdout (captured_output still holds the captured items)
+        sys.stdout = sys.__stdout__
+        # Do any other test code (e.g., asserts)
+        self.assertEqual(expected_output, captured_output.getvalue())
+        
+
+    def test_search_employee_returns_the_correct_menu(self):
+        """Ensure that the correct next menu is loaded.
+        """
+        # add some employees to the database
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1"},
+            {'id': 2, 'name': "Test Employee 2"}
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            # give each employee an associated logentry
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=datetime.date(2018,1,2),
+                task_name='Test task {}'.format(employee['id']),
+                duration=employee['id'],
+                notes='Note'
+            )
+        user_input='1'
+        with patch('builtins.input', side_effect=user_input):
+            result = self.menu.search_employee()
+        
+        expected_result = self.menu.present_next_result
+        
+        self.assertEqual(expected_result, result)
 
     # search_employee_text
 
