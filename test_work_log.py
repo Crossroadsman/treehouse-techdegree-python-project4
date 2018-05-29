@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 # (see: https://dev.to/patrnk/how-to-test-input-processing-in-python-3)
 import datetime
+from collections import OrderedDict
 
 from peewee import *
 
@@ -193,28 +194,129 @@ class MenuTests(unittest.TestCase):
 
     # present_results
     def test_present_results_displays_results(self):
-        
+        # to test this we don't actually need to write to the database,
+        # we just need a list of ordered_dicts in menu.records
+        # Add an entry to the database
+        test_records = [
+            OrderedDict([
+                ('name', 'Test Employee 1'),
+                ('date', datetime.date(2018,5,1)),
+                ('task_name', 'Test Task 1'),
+                ('duration', 1),
+                ('notes', 'This is a note for the first test task')
+            ]),
+            OrderedDict([
+                ('name', 'Test Employee 2'),
+                ('date', datetime.date(2018,5,2)),
+                ('task_name', 'Test Task 2'),
+                ('duration', 2),
+                ('notes', 'This is a note for the second test task')
+            ]),
+        ]
+        self.menu.records = [test_records[0]]
+        f_username = test_records[0]['name']
+        f_date = test_records[0]['date'].strftime("%Y-%m-%d")
+        f_time_taken = str(test_records[0]['duration'])
+        f_task_name = test_records[0]['task_name']
+        f_notes = test_records[0]['notes']
+        short_form = "{}: {} ({}m): {} | {}".format(
+            f_username,
+            f_date,
+            f_time_taken,
+            f_task_name,
+            f_notes
+        )
+        expected_output = ("\nSearch Results\n" + 
+                           "1) {}\n".format(short_form) +
+                           "\n" +
+                           "Available actions:\n" +
+                           "v) View detail\n" +
+                           "e) Edit\n" +
+                           "d) Delete\n" +
+                           "m) go back to Main menu\n" +
+                           "q) quit\n")
+
+        '''The process for capturing `print()` statements and redirecting to
+        an accumulating object for later processing has the following steps:
+        1. import io and sys
+        2. in the test function, create a StringIO object
+           (this is a buffer object that will be the destination for the
+            redirected stdout)
+           ```
+           captured_output = io.StringIO()
+           ```
+        3. point stdout at the capture object
+           ```
+           sys.stdout = captured_output
+           ```
+        4. Run code as normal, any print() statement will go to 
+           the StringIO object instead of standard out
+        5. Revert stdout (will not affect the contents of the StringIO buffer)
+           ```
+           sys.stdout = sys.__stdout__
+           ```
+        6. Run the rest of the code. The contents of the StringIO buffer can
+           be accessed as follows:
+           ```
+           captured_output.getvalue()
+           ```
+        '''
         # Create a StringIO object to be a capture object
         captured_output = io.StringIO()
         # point stdout at the capture object
         sys.stdout = captured_output
-
         # Do anything that's going to have a print statement
-        self.menu.quit_program()
+        # (these will be accumulated in the captured_output object)
+        example_input = 'q'
+        with patch('builtins.input', side_effect=example_input):
+            self.menu.present_results()
 
         # Revert stdout (captured_output still holds the captured items)
         sys.stdout = sys.__stdout__
-
         # Do any other test code (e.g., asserts)
-        self.assertEqual("Quitting\n", captured_output.getvalue())
-
-        
+        self.assertEqual(expected_output, captured_output.getvalue())
 
     def test_present_results_loads_correct_next_menu(self):
         # this can be just like the previous tests that return menus
         # with the only wrinkle that we need to handle the different 
         # values for self.menu.current_page_start do determine whether
         # next or previous menus are available
+        # Add an entry to the database
+        '''
+        test_employee_data = {'name': 'Test Employee'}
+        test_log_entry_data = {
+            'employee': test_employee_data,
+            'date': datetime.date(2018,5,1),
+            'task_name': 'Test task',
+            'duration': 1,
+            'notes': 'This is a note for a test task',
+        }
+        test_employee_record = db_manager.Employee.get_or_create(
+            name=test_employee_data['name']
+        )
+        test_log_entry_record = db_manager.LogEntry.create(
+            employee=test_employee_record[0],
+            date=test_log_entry_data['date'],
+            task_name=test_log_entry_data['task_name'],
+            duration=test_log_entry_data['duration'],
+            notes=test_log_entry_data['notes']
+        )
+        self.menu.records = [test_log_entry_record]
+        f_username = test_employee_data['name']
+        f_date = test_log_entry_data['date'].strftime("%Y-%m-%d")
+        f_time_taken = str(test_log_entry_data['duration'])
+        f_task_name = test_log_entry_data['task_name']
+        f_notes = test_log_entry_data['notes']
+        short_form = "{}: {} ({}m) {} | {}".format(
+            f_username,
+            f_date,
+            f_time_taken,
+            f_task_name,
+            f_notes
+        )
+        expected_output = ("\nSearch Results\n" + 
+                           "1) {}\n".format(short_form))
+        '''
         pass
 
     # present_next_result
