@@ -336,7 +336,157 @@ class MenuTests(unittest.TestCase):
         self.menu.OPTIONS['entries per page'] = old_entries_per_page
 
     # present_next_result
+    def test_present_next_result_displays_result(self):
+        """Ensure that what is displayed to the user is what we expect to
+        be displayed to the user.
+        """
+        # to test this we don't actually need to write to the database,
+        # we just need a list of ordered_dicts in menu.records
+        test_records = [
+            OrderedDict([
+                ('name', 'Test Employee 1'),
+                ('date', datetime.date(2018,5,1)),
+                ('task_name', 'Test Task 1'),
+                ('duration', 1),
+                ('notes', 'This is a note for the first test task')
+            ]),
+            OrderedDict([
+                ('name', 'Test Employee 2'),
+                ('date', datetime.date(2018,5,2)),
+                ('task_name', 'Test Task 2'),
+                ('duration', 2),
+                ('notes', 'This is a note for the second test task')
+            ]),
+            OrderedDict([
+                ('name', 'Test Employee 3'),
+                ('date', datetime.date(2018,5,3)),
+                ('task_name', 'Test Task 3'),
+                ('duration', 3),
+                ('notes', 'This is a note for the third test task')
+            ]),
+        ]
+        self.menu.records = test_records
+        self.menu.current_record = 1
+        line0 = test_records[1]['name'] + "\n"
+        f_date = test_records[1]['date'].strftime("%Y-%m-%d")
+        f_task_name = test_records[1]['task_name']
+        line1 = "{}: {}".format(f_date, f_task_name)
+        line2 = "\n" + ("-" * len(line1)) + "\n"
+        f_time_taken = str(test_records[1]['duration'])
+        line3 = "{} minutes\n".format(f_time_taken)
+        line4 = "{}\n".format(test_records[1]['notes'])
+        long_form = (line0 +
+                     line1 +
+                     line2 +
+                     line3 +
+                     line4
+        )
+        expected_output = (long_form +
+                           "\n" +
+                           "Available actions:\n" +
+                           "p) Previous\n" +
+                           "n) Next\n" +
+                           "b) Back to list view\n" +
+                           "e) Edit\n" +
+                           "d) Delete\n" +
+                           "m) go back to Main menu\n" +
+                           "q) quit\n")
 
+        '''The process for capturing `print()` statements and redirecting to
+        an accumulating object for later processing has the following steps:
+        1. import io and sys
+        2. in the test function, create a StringIO object
+           (this is a buffer object that will be the destination for the
+            redirected stdout)
+           ```
+           captured_output = io.StringIO()
+           ```
+        3. point stdout at the capture object
+           ```
+           sys.stdout = captured_output
+           ```
+        4. Run code as normal, any print() statement will go to 
+           the StringIO object instead of standard out
+        5. Revert stdout (will not affect the contents of the StringIO buffer)
+           ```
+           sys.stdout = sys.__stdout__
+           ```
+        6. Run the rest of the code. The contents of the StringIO buffer can
+           be accessed as follows:
+           ```
+           captured_output.getvalue()
+           ```
+        '''
+        # Create a StringIO object to be a capture object
+        captured_output = io.StringIO()
+        # point stdout at the capture object
+        sys.stdout = captured_output
+        # Do anything that's going to have a print statement
+        # (these will be accumulated in the captured_output object)
+        example_input = 'q'
+        with patch('builtins.input', side_effect=example_input):
+            self.menu.present_next_result()
+
+        # Revert stdout (captured_output still holds the captured items)
+        sys.stdout = sys.__stdout__
+        # Do any other test code (e.g., asserts)
+        self.assertEqual(expected_output, captured_output.getvalue())
+
+    def test_present_next_result_loads_correct_next_menu(self):
+        # this can be just like the previous tests that return menus
+        # with the only wrinkle that we need to handle the different 
+        # values for self.menu.current_page_start do determine whether
+        # next or previous menus are available
+        # Add an entry to the database
+        """Ensure that what is displayed to the user is what we expect to
+        be displayed to the user.
+        """
+        # to test this we don't actually need to write to the database,
+        # we just need a list of ordered_dicts in menu.records
+        test_records = [
+            OrderedDict([
+                ('name', 'Test Employee 1'),
+                ('date', datetime.date(2018,5,1)),
+                ('task_name', 'Test Task 1'),
+                ('duration', 1),
+                ('notes', 'This is a note for the first test task')
+            ]),
+            OrderedDict([
+                ('name', 'Test Employee 2'),
+                ('date', datetime.date(2018,5,2)),
+                ('task_name', 'Test Task 2'),
+                ('duration', 2),
+                ('notes', 'This is a note for the second test task')
+            ]),
+            OrderedDict([
+                ('name', 'Test Employee 3'),
+                ('date', datetime.date(2018,5,3)),
+                ('task_name', 'Test Task 3'),
+                ('duration', 3),
+                ('notes', 'This is a note for the third test task')
+            ]),
+        ]
+        old_entries_per_page = self.menu.OPTIONS['entries per page']
+        self.menu.records = test_records
+        self.menu.current_record = 1
+        user_inputs = {
+            'n': self.menu.next_result,
+            'p': self.menu.previous_result,
+            'b': self.menu.present_results,
+            'e': self.menu.edit_current_record,
+            'd': self.menu.delete_current_record,
+            'm': self.menu.main_menu,
+            'q': self.menu.quit_program,
+        }
+        results = []
+        expected_results = []
+        for key, value in user_inputs.items():
+            expected_results.append(value)
+            with patch('builtins.input', side_effect=key):
+                results.append(self.menu.present_next_result())
+        
+        self.assertEqual(expected_results, results)
+        
     # search_employee
 
     # search_employee_text
