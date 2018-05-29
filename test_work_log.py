@@ -194,9 +194,11 @@ class MenuTests(unittest.TestCase):
 
     # present_results
     def test_present_results_displays_results(self):
+        """Ensure that what is displayed to the user is what we expect to
+        be displayed to the user.
+        """
         # to test this we don't actually need to write to the database,
         # we just need a list of ordered_dicts in menu.records
-        # Add an entry to the database
         test_records = [
             OrderedDict([
                 ('name', 'Test Employee 1'),
@@ -282,42 +284,56 @@ class MenuTests(unittest.TestCase):
         # values for self.menu.current_page_start do determine whether
         # next or previous menus are available
         # Add an entry to the database
-        '''
-        test_employee_data = {'name': 'Test Employee'}
-        test_log_entry_data = {
-            'employee': test_employee_data,
-            'date': datetime.date(2018,5,1),
-            'task_name': 'Test task',
-            'duration': 1,
-            'notes': 'This is a note for a test task',
+        """Ensure that what is displayed to the user is what we expect to
+        be displayed to the user.
+        """
+        # to test this we don't actually need to write to the database,
+        # we just need a list of ordered_dicts in menu.records
+        test_records = [
+            OrderedDict([
+                ('name', 'Test Employee 1'),
+                ('date', datetime.date(2018,5,1)),
+                ('task_name', 'Test Task 1'),
+                ('duration', 1),
+                ('notes', 'This is a note for the first test task')
+            ]),
+            OrderedDict([
+                ('name', 'Test Employee 2'),
+                ('date', datetime.date(2018,5,2)),
+                ('task_name', 'Test Task 2'),
+                ('duration', 2),
+                ('notes', 'This is a note for the second test task')
+            ]),
+            OrderedDict([
+                ('name', 'Test Employee 3'),
+                ('date', datetime.date(2018,5,3)),
+                ('task_name', 'Test Task 3'),
+                ('duration', 3),
+                ('notes', 'This is a note for the third test task')
+            ]),
+        ]
+        old_entries_per_page = self.menu.OPTIONS['entries per page']
+        self.menu.OPTIONS['entries per page'] = 1
+        self.menu.records = test_records
+        self.menu.current_page_start = 1
+        user_inputs = {
+            'n': self.menu.next_page,
+            'p': self.menu.previous_page,
+            'v': self.menu.select_detail,
+            'e': self.menu.edit_record,
+            'd': self.menu.delete_record,
+            'm': self.menu.main_menu,
+            'q': self.menu.quit_program,
         }
-        test_employee_record = db_manager.Employee.get_or_create(
-            name=test_employee_data['name']
-        )
-        test_log_entry_record = db_manager.LogEntry.create(
-            employee=test_employee_record[0],
-            date=test_log_entry_data['date'],
-            task_name=test_log_entry_data['task_name'],
-            duration=test_log_entry_data['duration'],
-            notes=test_log_entry_data['notes']
-        )
-        self.menu.records = [test_log_entry_record]
-        f_username = test_employee_data['name']
-        f_date = test_log_entry_data['date'].strftime("%Y-%m-%d")
-        f_time_taken = str(test_log_entry_data['duration'])
-        f_task_name = test_log_entry_data['task_name']
-        f_notes = test_log_entry_data['notes']
-        short_form = "{}: {} ({}m) {} | {}".format(
-            f_username,
-            f_date,
-            f_time_taken,
-            f_task_name,
-            f_notes
-        )
-        expected_output = ("\nSearch Results\n" + 
-                           "1) {}\n".format(short_form))
-        '''
-        pass
+        results = []
+        expected_results = []
+        for key, value in user_inputs.items():
+            expected_results.append(value)
+            with patch('builtins.input', side_effect=key):
+                results.append(self.menu.present_results())
+        
+        self.assertEqual(expected_results, results)
+        self.menu.OPTIONS['entries per page'] = old_entries_per_page
 
     # present_next_result
 
