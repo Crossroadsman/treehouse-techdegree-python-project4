@@ -559,6 +559,78 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     # search_employee_text
+    def test_search_employee_text_finds_matching_employees(self):
+        """Ensure that all matching employees are displayed and no non-
+        matching employees are displayed
+        """
+        # add some employees to the database
+        test_pattern = 'foo'
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1 foo"},
+            {'id': 2, 'name': "Test Employee 2 foo"},
+            {'id': 3, 'name': "Test Employee 3 bar"},
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=datetime.date(2018,1,2),
+                task_name='Test task {}'.format(employee['id']),
+                duration=employee['id'],
+                notes='Note')
+
+        title = "FIND EMPLOYEE NAME USING TEXT STRING" + "\n"
+        subtitle = "Enter the text string to search on" + "\n"
+        employee_rows = ""
+        for employee in test_employees:
+            if test_pattern in employee['name']:
+                employee_rows += "{}) {}\n".format(employee['id'], 
+                                                   employee['name'])
+        
+        expected_output = (title +
+                           subtitle +
+                           employee_rows)
+
+        # Create a StringIO object to be a capture object
+        captured_output = io.StringIO()
+        # point stdout at the capture object
+        sys.stdout = captured_output
+        # Do anything that's going to have a print statement
+        # (these will be accumulated in the captured_output object)
+        example_input = [test_pattern, '1']
+        with patch('builtins.input', side_effect=example_input):
+            self.menu.search_employee_text()
+
+        # Revert stdout (captured_output still holds the captured items)
+        sys.stdout = sys.__stdout__
+        # Do any other test code (e.g., asserts)
+        self.assertEqual(expected_output, captured_output.getvalue())
+        
+    def test_search_employees_returns_correct_menu(self):
+        """Ensure that the correct next menu is loaded.
+        """
+        # add some employees to the database
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1"},
+            {'id': 2, 'name': "Test Employee 2"}
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            # give each employee an associated logentry
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=datetime.date(2018,1,2),
+                task_name='Test task {}'.format(employee['id']),
+                duration=employee['id'],
+                notes='Note'
+            )
+        user_inputs=['Test', '1']
+        with patch('builtins.input', side_effect=user_inputs):
+            result = self.menu.search_employee_text()
+        
+        expected_result = self.menu.present_next_result
+        
+        self.assertEqual(expected_result, result)
 
     # search_exact_date
 
