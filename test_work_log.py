@@ -697,7 +697,7 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     # search_date_range
-    def test_search_date_range_displays_entries_matching_date_range(self):
+    def test_search_date_range_retrieves_corect_db_entries(self):
         """Ensure that all entries whose date in the specified range are
         retrieved from the DB"""
         # add some data to the database
@@ -793,6 +793,83 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     # search_time_spent
+    def test_search_time_spent_retrieves_corect_db_entries(self):
+        """Ensure that all entries with the specified duration (and only those
+        entries) are retrieved from the DB"""
+        # add some data to the database
+        test_employee = [
+            {'id': 1, 'name': "Test Employee 1"},
+        ]
+        test_log_entry_durations = [
+            1,
+            2,
+            2,
+            3,
+            5,
+        ]
+        e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
+        # create some log entries
+        for duration in test_log_entry_durations:
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=datetime.date(2018, 1, duration),
+                task_name='Test task of {}m'.format(duration),
+                duration=duration,
+                notes='Note'
+            )
+        match_duration = 2
+        
+        expected_results = []
+        for duration in test_log_entry_durations:
+            if duration == match_duration:
+                new_record = OrderedDict([
+                    ('name', test_employee[0]['name']),
+                    ('date', datetime.date(2018, 1, duration)),
+                    ('task_name', 'Test task of {}m'.format(duration)),
+                    ('duration', duration),
+                    ('notes', "Note")
+                ])
+                expected_results.append(new_record)
+        
+        user_input = str(match_duration)
+        with patch('builtins.input', side_effect=user_input):
+            self.menu.search_time_spent()
+
+        self.assertEqual(expected_results, self.menu.records)
+
+    def test_search_time_spent_returns_correct_menu(self):
+        """Ensure that the correct next menu is loaded.
+        """
+        # add some data to the database
+        test_employee = [
+            {'id': 1, 'name': "Test Employee 1"},
+        ]
+        test_log_entry_durations = [
+            1,
+            2,
+            2,
+            3,
+            5,
+        ]
+        e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
+        # create some log entries
+        for duration in test_log_entry_durations:
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=datetime.date(2018, 1, duration),
+                task_name='Test task of {}m'.format(duration),
+                duration=duration,
+                notes='Note'
+            )
+        match_duration = 2
+        
+        user_input = str(match_duration)
+        with patch('builtins.input', side_effect=user_input):
+            result = self.menu.search_time_spent()
+
+        expected_result = self.menu.present_next_result
+
+        self.assertEqual(expected_result, result)
 
     # search_text_search
 
