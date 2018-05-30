@@ -1,3 +1,10 @@
+"""Test DB Manager
+Unit Tests for work_log.py
+
+Created: 2018
+Last Update: 2018-05-30
+Author: Alex Koumparos
+"""
 import io
 import sys
 import unittest
@@ -392,31 +399,6 @@ class MenuTests(unittest.TestCase):
                            "m) go back to Main menu\n" +
                            "q) quit\n")
 
-        '''The process for capturing `print()` statements and redirecting to
-        an accumulating object for later processing has the following steps:
-        1. import io and sys
-        2. in the test function, create a StringIO object
-           (this is a buffer object that will be the destination for the
-            redirected stdout)
-           ```
-           captured_output = io.StringIO()
-           ```
-        3. point stdout at the capture object
-           ```
-           sys.stdout = captured_output
-           ```
-        4. Run code as normal, any print() statement will go to 
-           the StringIO object instead of standard out
-        5. Revert stdout (will not affect the contents of the StringIO buffer)
-           ```
-           sys.stdout = sys.__stdout__
-           ```
-        6. Run the rest of the code. The contents of the StringIO buffer can
-           be accessed as follows:
-           ```
-           captured_output.getvalue()
-           ```
-        '''
         # Create a StringIO object to be a capture object
         captured_output = io.StringIO()
         # point stdout at the capture object
@@ -491,7 +473,7 @@ class MenuTests(unittest.TestCase):
         """Ensure that what is displayed to the user is what we expect to
         be displayed to the user.
         """
-        # add some employees to the database
+        # add some data to the database
         test_employees = [
             {'id': 1, 'name': "Test Employee 1"},
             {'id': 2, 'name': "Test Employee 2"}
@@ -633,6 +615,86 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     # search_exact_date
+    def test_search_exact_date_displays_correct_dates(self):
+        """Ensure that all dates are displayed"""
+        # add some data to the database
+        test_employee = [
+            {'id': 1, 'name': "Test Employee 1"},
+        ]
+        test_log_entry_dates = [
+            datetime.date(2018,1,1),
+            datetime.date(2018,1,2),
+            datetime.date(2018,3,4),
+            datetime.date(2018,5,6),
+            datetime.date(2018,5,7),
+        ]
+        e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
+        # create some log entries
+        for date in test_log_entry_dates:
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=date,
+                task_name='Test task for date {}'.format(date),
+                duration=10,
+                notes='Note'
+            )
+            
+        title = "\nSEARCH EXACT DATE" + "\n"
+        date_rows = ""
+        for i, date in enumerate(test_log_entry_dates):
+            date_string = date.strftime("%Y-%m-%d")
+            date_rows += "{}) {}\n".format(i + 1, date_string)
+        
+        expected_output = (title +
+                           date_rows)
+
+        # Create a StringIO object to be a capture object
+        captured_output = io.StringIO()
+        # point stdout at the capture object
+        sys.stdout = captured_output
+        # Do anything that's going to have a print statement
+        # (these will be accumulated in the captured_output object)
+        example_input = ['1']
+        with patch('builtins.input', side_effect=example_input):
+            self.menu.search_exact_date()
+
+        # Revert stdout (captured_output still holds the captured items)
+        sys.stdout = sys.__stdout__
+        # Do any other test code (e.g., asserts)
+        self.assertEqual(expected_output, captured_output.getvalue())
+    
+    def test_search_exact_date_returns_correct_menu(self):
+        """Ensure that the correct next menu is loaded.
+        """
+        # add some data to the database
+        test_employee = [
+            {'id': 1, 'name': "Test Employee 1"},
+        ]
+        test_log_entry_dates = [
+            datetime.date(2018,1,1),
+            datetime.date(2018,1,2),
+            datetime.date(2018,3,4),
+            datetime.date(2018,5,6),
+            datetime.date(2018,5,7),
+        ]
+        e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
+        # create some log entries
+        for date in test_log_entry_dates:
+            db_manager.LogEntry.create(
+                employee=e[0],
+                date=date,
+                task_name='Test task for date {}'.format(date),
+                duration=10,
+                notes='Note'
+            )
+            
+        example_input = ['1']
+        with patch('builtins.input', side_effect=example_input):
+            result = self.menu.search_exact_date()
+
+        expected_result = self.menu.present_next_result
+
+        self.assertEqual(expected_result, result)
 
     # search_date_range
 

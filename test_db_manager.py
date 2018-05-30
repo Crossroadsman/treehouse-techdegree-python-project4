@@ -1,3 +1,10 @@
+"""Test DB Manager
+Unit Tests for db_manager.py
+
+Created: 2018
+Last Update: 2018-05-30
+Author: Alex Koumparos
+"""
 import unittest
 import datetime
 from collections import OrderedDict

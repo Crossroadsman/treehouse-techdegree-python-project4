@@ -4,7 +4,7 @@
 Record work activities and store to a sqlite database
 
 Created: 2018
-Last Update: 2018-05-23
+Last Update: 2018-05-30
 Author: Alex Koumparos
 """
 import datetime
