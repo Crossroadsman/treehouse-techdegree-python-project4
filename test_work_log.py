@@ -872,6 +872,126 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     # search_text_search
+    def test_search_text_search_retrieves_all_matching_records(self):
+        """Ensure that all records matching the specified string (and only)
+        those records are retrieved from the DB"""
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1 foo"},
+            {'id': 2, 'name': "Test Employee 2 foo"},
+            {'id': 3, 'name': "Test Employee 3 bar"},
+        ]
+        test_log_entries = [
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,1,2)),
+                ('task_name', 'Test task alpha'),
+                ('duration', 1),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[1]['name']),
+                ('date', datetime.date(2018,3,4)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 2),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[2]['name']),
+                ('date', datetime.date(2018,5,6)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 3),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,7,8)),
+                ('task_name', 'Test task charlie'),
+                ('duration', 4),
+                ('notes', 'Notes'),
+            ]),
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            for entry in test_log_entries:
+                if employee['name'] == entry['name']:
+                    db_manager.LogEntry.create(
+                        employee=e[0],
+                        date=entry['date'],
+                        task_name=entry['task_name'],
+                        duration=entry['duration'],
+                        notes=entry['notes']
+                    )
+        test_search_string = 'bravo'
+        
+        with patch('builtins.input', side_effect=test_search_string):
+            self.menu.search_text_search()
+        
+        expected_results = []
+        for entry in test_log_entries:
+            if (test_search_string in entry['name'] or
+                test_search_string in entry['task_name'] or
+                test_search_string in entry['notes']):
+                expected_results.append(entry)
+
+        self.assertEqual(expected_results, self.menu.records)
+
+    def test_search_test_search_returns_correct_menu(self):
+        """Ensure that the correct next menu is loaded.
+        """
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1 foo"},
+            {'id': 2, 'name': "Test Employee 2 foo"},
+            {'id': 3, 'name': "Test Employee 3 bar"},
+        ]
+        test_log_entries = [
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,1,2)),
+                ('task_name', 'Test task alpha'),
+                ('duration', 1),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[1]['name']),
+                ('date', datetime.date(2018,3,4)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 2),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[2]['name']),
+                ('date', datetime.date(2018,5,6)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 3),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,7,8)),
+                ('task_name', 'Test task charlie'),
+                ('duration', 4),
+                ('notes', 'Notes'),
+            ]),
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            for entry in test_log_entries:
+                if employee['name'] == entry['name']:
+                    db_manager.LogEntry.create(
+                        employee=e[0],
+                        date=entry['date'],
+                        task_name=entry['task_name'],
+                        duration=entry['duration'],
+                        notes=entry['notes']
+                    )
+        test_search_string = 'bravo'
+        
+        with patch('builtins.input', side_effect=test_search_string):
+            result = self.menu.search_text_search()
+        
+        expected_result = self.menu.present_next_result
+
+        self.assertEqual(expected_result, result)
 
     # edit_record
 
