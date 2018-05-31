@@ -994,8 +994,148 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     # edit_record
+    def test_edit_record_edits_the_correct_record(self):
+        """Ensure that the record retrieved from the DB corresponds to the
+        record being requested by the user.
+
+        This also ensures that the new value of the DB entry corresponds to 
+        the new values supplied by the user
+        """
+        # create some db records
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1 foo"},
+            {'id': 2, 'name': "Test Employee 2 foo"},
+            {'id': 3, 'name': "Test Employee 3 bar"},
+        ]
+        test_log_entries = [
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,1,2)),
+                ('task_name', 'Test task alpha'),
+                ('duration', 1),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[1]['name']),
+                ('date', datetime.date(2018,3,4)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 2),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[2]['name']),
+                ('date', datetime.date(2018,5,6)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 3),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,7,8)),
+                ('task_name', 'Test task charlie'),
+                ('duration', 4),
+                ('notes', 'Notes'),
+            ]),
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            for entry in test_log_entries:
+                if employee['name'] == entry['name']:
+                    db_manager.LogEntry.create(
+                        employee=e[0],
+                        date=entry['date'],
+                        task_name=entry['task_name'],
+                        duration=entry['duration'],
+                        notes=entry['notes']
+                    )
+        # set the menu instance's `records` property
+        self.menu.records = test_log_entries
+        record_index = 1
+
+        # handle the user input to select the record
+        # handle the user input to specify the new values for the record
+        user_inputs = [
+            str(record_index + 1),
+            "New Test Employee",
+            "2017-10-05",
+            "New Test Task",
+            "55",
+            "New Note"
+        ]
+        # get the unedited requested record from the db
+        old_query = (db_manager
+            .LogEntry
+            .select()
+            .join(db_manager.Employee)
+            .where(
+                db_manager.Employee.name == test_log_entries[record_index]['name'],
+                db_manager.LogEntry.date == test_log_entries[record_index]['date'],
+                db_manager.LogEntry.task_name == test_log_entries[record_index]['task_name'],
+                db_manager.LogEntry.duration == test_log_entries[record_index]['duration'],
+                db_manager.LogEntry.notes == test_log_entries[record_index]['notes']
+            ))
+        self.assertEqual(len(old_query), 1)
+        
+        # execute the method
+        with patch('builtins.input', side_effect=user_inputs):
+            self.menu.edit_record()
+        
+        # verify the record that was changed is the one selected by the user
+        # (make sure we can get the record with the new details and we can't
+        # get the record with the old details)
+        new_query = (db_manager
+            .LogEntry
+            .select()
+            .join(db_manager.Employee)
+            .where(
+                db_manager.Employee.name == user_inputs[1],
+                db_manager.LogEntry.date == user_inputs[2],
+                db_manager.LogEntry.task_name == user_inputs[3],
+                db_manager.LogEntry.duration == user_inputs[4],
+                db_manager.LogEntry.notes == user_inputs[5]
+            ))
+        repeat_old_query = (db_manager
+            .LogEntry
+            .select()
+            .join(db_manager.Employee)
+            .where(
+                db_manager.Employee.name == test_log_entries[record_index]['name'],
+                db_manager.LogEntry.date == test_log_entries[record_index]['date'],
+                db_manager.LogEntry.task_name == test_log_entries[record_index]['task_name'],
+                db_manager.LogEntry.duration == test_log_entries[record_index]['duration'],
+                db_manager.LogEntry.notes == test_log_entries[record_index]['notes']
+            ))
+
+        self.assertEqual(len(new_query), 1) # new_query should return one result
+        self.assertEqual(len(repeat_old_query), 0) # query should be empty
+        
+    def test_edit_record_returns_the_correct_menu(self):
+        """Ensure that the method returns the correct next menu"""
+        pass
 
     # edit_current_record
+    def test_edit_current_record_edits_the_correct_record(self):
+        """Ensure that the record retrieved from the DB corresponds to the
+        record being requested by the user
+        """
+        # create some db records
+        # set the menu instance's `records` property
+        # handle the user input to specify the new values for the record
+        # get the requested record from the db
+        # execute the method
+        # verify the record that was changed is the one selected by the user
+        pass
+    
+    def test_edit_current_record_applies_the_correct_changes(self):
+        """Ensure that the new value of the DB entry corresponds to the
+        new values supplied by the user
+        """
+        pass
+    
+    def test_edit_current_record_returns_the_correct_menu(self):
+        """Ensure that the method returns the correct next menu"""
+        pass
+
 
     # select_detail
 
