@@ -1111,7 +1111,58 @@ class MenuTests(unittest.TestCase):
         
     def test_edit_record_returns_the_correct_menu(self):
         """Ensure that the method returns the correct next menu"""
-        pass
+        """Ensure that the record retrieved from the DB corresponds to the
+        record being requested by the user.
+
+        This also ensures that the new value of the DB entry corresponds to 
+        the new values supplied by the user
+        """
+        # create some db records
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1 foo"},
+        ]
+        test_log_entries = [
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,1,2)),
+                ('task_name', 'Test task alpha'),
+                ('duration', 1),
+                ('notes', 'Notes'),
+            ]),
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            for entry in test_log_entries:
+                if employee['name'] == entry['name']:
+                    db_manager.LogEntry.create(
+                        employee=e[0],
+                        date=entry['date'],
+                        task_name=entry['task_name'],
+                        duration=entry['duration'],
+                        notes=entry['notes']
+                    )
+        # set the menu instance's `records` property
+        self.menu.records = test_log_entries
+        record_index = 0
+
+        # handle the user input to select the record
+        # handle the user input to specify the new values for the record
+        user_inputs = [
+            str(record_index + 1),
+            "New Test Employee",
+            "2017-10-05",
+            "New Test Task",
+            "55",
+            "New Note"
+        ]
+        
+        # execute the method
+        with patch('builtins.input', side_effect=user_inputs):
+            result = self.menu.edit_record()
+        
+        expected_result = self.menu.main_menu
+
+        self.assertEqual(result, expected_result)
 
     # edit_current_record
     def test_edit_current_record_edits_the_correct_record(self):
