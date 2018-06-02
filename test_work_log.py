@@ -1290,6 +1290,77 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     # display_entry
+    def test_display_entry_verbose_displays_correct_output(self):
+        """Makes sure that the output displayed to the user corresponds
+        to what was expected"""
+        entry = self.create_mixed_test_data()['test_log_entries'][0]
+        
+        line0 = entry['name']
+        line1 = "{}: {}".format(entry['date'], entry['task_name'])
+        spacer = "-" * len(line1)
+        line2 = "{} minutes".format(entry['duration'])
+        line3 = "{}".format(entry['notes'])
+        expected_output = (line0 + "\n" +
+                           line1 + "\n" +
+                           spacer + "\n" +
+                           line2 + "\n" +
+                           line3 + "\n")
+
+        # Create a StringIO object to be a capture object
+        captured_output = io.StringIO()
+        # point stdout at the capture object
+        sys.stdout = captured_output
+        # Do anything that's going to have a print statement
+        # (these will be accumulated in the captured_output object)
+        self.menu.display_entry(entry=entry, verbose=True)
+
+        # Revert stdout (captured_output still holds the captured items)
+        sys.stdout = sys.__stdout__
+        # Do any other test code (e.g., asserts)
+        self.assertEqual(expected_output, captured_output.getvalue())
+
+    def test_display_entry_short_form_displays_correct_output(self):
+        """Makes sure that the output displayed to the user corresponds
+        to what was expected"""
+        entry = self.create_mixed_test_data()['test_log_entries'][0]
+        
+        expected_output = ("{}: {} ({}m): {} | {}\n".format(
+            entry['name'],
+            entry['date'],
+            entry['duration'],
+            entry['task_name'],
+            entry['notes']
+        ))
+
+        # Create a StringIO object to be a capture object
+        captured_output = io.StringIO()
+        # point stdout at the capture object
+        sys.stdout = captured_output
+        # Do anything that's going to have a print statement
+        # (these will be accumulated in the captured_output object)
+        self.menu.display_entry(entry=entry)
+
+        # Revert stdout (captured_output still holds the captured items)
+        sys.stdout = sys.__stdout__
+        # Do any other test code (e.g., asserts)
+        self.assertEqual(expected_output, captured_output.getvalue())
+    
+    def test_display_entry_return_only_returns_correct_output(self):
+        """Makes sure that the output returned corresponds
+        to what was expected"""
+        entry = self.create_mixed_test_data()['test_log_entries'][0]
+        
+        expected_result = ("{}: {} ({}m): {} | {}".format(
+            entry['name'],
+            entry['date'],
+            entry['duration'],
+            entry['task_name'],
+            entry['notes']
+        ))
+
+        result = self.menu.display_entry(entry=entry, return_only=True)
+
+        self.assertEqual(expected_result, result)
 
     # previous_result
 

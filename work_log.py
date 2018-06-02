@@ -464,8 +464,6 @@ class Menu:
         user_input = input("> ")
         match_index = int(user_input) - 1
         record = self.records[match_index]
-        print("RECORD:")
-        print(record)
         # get the new values for the record
         print("New Username")
         input_text = input("Enter the username > ")
