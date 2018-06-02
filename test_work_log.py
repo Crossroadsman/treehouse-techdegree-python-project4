@@ -1363,12 +1363,32 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(expected_result, result)
 
     # previous_result
+    def test_previous_result_decrements_current_record(self):
+        pass
+    
+    def test_previous_result_returns_correct_menu(self):
+        pass
 
     # next_result
+    def test_next_result_increments_current_record(self):
+        pass
+    
+    def test_next_result_returns_correct_menu(self):
+        pass
 
     # previous_page
+    def test_previous_page_reduces_current_page_start_by_correct_amt(self):
+        pass
+    
+    def test_previous_page_returns_correct_menu(self):
+        pass
 
     # next_page
+    def test_next_page_increases_current_page_start_by_correct_amt(self):
+        pass
+    
+    def test_next_page_returns_correct_menu(self):
+        pass
 
     # validate_date_entry
 
