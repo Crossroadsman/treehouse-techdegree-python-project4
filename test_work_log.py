@@ -111,6 +111,20 @@ class MenuTests(unittest.TestCase):
             'test_employees': test_employees,
             'test_log_entries': test_log_entries 
         }
+    
+    def base_query(self, query_dict):
+        new_query = (db_manager
+            .LogEntry
+            .select()
+            .join(db_manager.Employee)
+            .where(
+                db_manager.Employee.name == query_dict['name'],
+                db_manager.LogEntry.date == query_dict['date'],
+                db_manager.LogEntry.task_name == query_dict['task_name'],
+                db_manager.LogEntry.duration == query_dict['duration'],
+                db_manager.LogEntry.notes == query_dict['notes']
+            ))
+        return new_query
 
 
     # Setup and Teardown
@@ -1102,56 +1116,26 @@ class MenuTests(unittest.TestCase):
 
         # handle the user input to select the record
         # handle the user input to specify the new values for the record
-        user_inputs = [
-            "New Test Employee",
-            "2017-10-05",
-            "New Test Task",
-            "55",
-            "New Note"
-        ]
+        user_inputs = OrderedDict([
+            ('name', "New Test Employee"),
+            ('date', "2017-10-05"),
+            ('task_name', "New Test Task"),
+            ('duration', 55),
+            ('notes', "New Note")
+        ])
         # get the unedited requested record from the db
-        old_query = (db_manager
-            .LogEntry
-            .select()
-            .join(db_manager.Employee)
-            .where(
-                db_manager.Employee.name == test_log_entries[record_index]['name'],
-                db_manager.LogEntry.date == test_log_entries[record_index]['date'],
-                db_manager.LogEntry.task_name == test_log_entries[record_index]['task_name'],
-                db_manager.LogEntry.duration == test_log_entries[record_index]['duration'],
-                db_manager.LogEntry.notes == test_log_entries[record_index]['notes']
-            ))
+        old_query = self.base_query(test_log_entries[record_index])
         self.assertEqual(len(old_query), 1)
         
         # execute the method
-        with patch('builtins.input', side_effect=user_inputs):
+        with patch('builtins.input', side_effect=list(user_inputs.values())):
             self.menu.edit_current_record()
         
         # verify the record that was changed is the one selected by the user
         # (make sure we can get the record with the new details and we can't
         # get the record with the old details)
-        new_query = (db_manager
-            .LogEntry
-            .select()
-            .join(db_manager.Employee)
-            .where(
-                db_manager.Employee.name == user_inputs[0],
-                db_manager.LogEntry.date == user_inputs[1],
-                db_manager.LogEntry.task_name == user_inputs[2],
-                db_manager.LogEntry.duration == user_inputs[3],
-                db_manager.LogEntry.notes == user_inputs[4]
-            ))
-        repeat_old_query = (db_manager
-            .LogEntry
-            .select()
-            .join(db_manager.Employee)
-            .where(
-                db_manager.Employee.name == test_log_entries[record_index]['name'],
-                db_manager.LogEntry.date == test_log_entries[record_index]['date'],
-                db_manager.LogEntry.task_name == test_log_entries[record_index]['task_name'],
-                db_manager.LogEntry.duration == test_log_entries[record_index]['duration'],
-                db_manager.LogEntry.notes == test_log_entries[record_index]['notes']
-            ))
+        new_query = self.base_query(user_inputs)
+        repeat_old_query = self.base_query(test_log_entries[record_index])
         self.assertEqual(len(new_query), 1) # new_query should return one result
         self.assertEqual(len(repeat_old_query), 0) # query should be empty
         
@@ -1210,14 +1194,39 @@ class MenuTests(unittest.TestCase):
         gets loaded into current_record
         """
         # make some DB entries
+        dataset = self.create_mixed_test_data()
+        test_log_entries = dataset['test_log_entries']
+        self.menu.records = test_log_entries
         # choose an index
+        selected_index = 1
         # execute the method
+        user_input = str(selected_index + 1)
+        with patch('builtins.input', side_effect=user_input):
+            self.menu.select_detail()
+        
         # assert that the db entry that current_record looks up is the same
         #   as the one chosen.
-        pass
+        self.assertEqual(test_log_entries[selected_index],
+                         self.menu.records[self.menu.current_record])
     
     def test_select_detail_returns_the_correct_menu(self):
-        pass
+        """Ensure that the method returns the correct next menu"""
+        # make some DB entries
+        dataset = self.create_mixed_test_data()
+        test_log_entries = dataset['test_log_entries']
+        self.menu.records = test_log_entries
+        # choose an index
+        selected_index = 1
+        # execute the method
+        user_input = str(selected_index + 1)
+        with patch('builtins.input', side_effect=user_input):
+            result = self.menu.select_detail()
+        
+        # assert that the correct menu is retured
+        expected_result = self.menu.present_next_result
+
+        self.assertEqual(result, expected_result)
+
 
     # delete_record
 
