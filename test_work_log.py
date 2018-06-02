@@ -994,26 +994,17 @@ class MenuTests(unittest.TestCase):
 
         # handle the user input to select the record
         # handle the user input to specify the new values for the record
-        user_inputs = [
-            str(record_index + 1),
-            "New Test Employee",
-            "2017-10-05",
-            "New Test Task",
-            "55",
-            "New Note"
-        ]
+        log_entry_for_input = OrderedDict([
+            ('name', "New Test Employee"),
+            ('date', "2017-10-05"),
+            ('task_name', "New Test Task"),
+            ('duration', 55),
+            ('notes', "New Note")
+        ])
+
+        user_inputs = [record_index + 1] + list(log_entry_for_input.values())
         # get the unedited requested record from the db
-        old_query = (db_manager
-            .LogEntry
-            .select()
-            .join(db_manager.Employee)
-            .where(
-                db_manager.Employee.name == test_log_entries[record_index]['name'],
-                db_manager.LogEntry.date == test_log_entries[record_index]['date'],
-                db_manager.LogEntry.task_name == test_log_entries[record_index]['task_name'],
-                db_manager.LogEntry.duration == test_log_entries[record_index]['duration'],
-                db_manager.LogEntry.notes == test_log_entries[record_index]['notes']
-            ))
+        old_query = self.base_query(test_log_entries[record_index])
         self.assertEqual(len(old_query), 1)
         
         # execute the method
@@ -1023,28 +1014,8 @@ class MenuTests(unittest.TestCase):
         # verify the record that was changed is the one selected by the user
         # (make sure we can get the record with the new details and we can't
         # get the record with the old details)
-        new_query = (db_manager
-            .LogEntry
-            .select()
-            .join(db_manager.Employee)
-            .where(
-                db_manager.Employee.name == user_inputs[1],
-                db_manager.LogEntry.date == user_inputs[2],
-                db_manager.LogEntry.task_name == user_inputs[3],
-                db_manager.LogEntry.duration == user_inputs[4],
-                db_manager.LogEntry.notes == user_inputs[5]
-            ))
-        repeat_old_query = (db_manager
-            .LogEntry
-            .select()
-            .join(db_manager.Employee)
-            .where(
-                db_manager.Employee.name == test_log_entries[record_index]['name'],
-                db_manager.LogEntry.date == test_log_entries[record_index]['date'],
-                db_manager.LogEntry.task_name == test_log_entries[record_index]['task_name'],
-                db_manager.LogEntry.duration == test_log_entries[record_index]['duration'],
-                db_manager.LogEntry.notes == test_log_entries[record_index]['notes']
-            ))
+        new_query = self.base_query(log_entry_for_input)
+        repeat_old_query = self.base_query(test_log_entries[record_index])
 
         self.assertEqual(len(new_query), 1) # new_query should return one result
         self.assertEqual(len(repeat_old_query), 0) # query should be empty
@@ -1227,10 +1198,19 @@ class MenuTests(unittest.TestCase):
 
         self.assertEqual(result, expected_result)
 
-
     # delete_record
+    def test_delete_record_deletes_the_specified_record(self):
+        pass
+    
+    def test_delete_record_returns_the_correct_menu(self):
+        pass
 
     # delete_current_record
+    def test_delete_current_record_deletes_the_current_record(self):
+        pass
+    
+    def test_delete_current_record_returns_the_correct_menu(self):
+        pass
 
     # display_entry
 
