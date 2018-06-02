@@ -56,6 +56,62 @@ class MenuTests(unittest.TestCase):
         db_manager.db = SqliteDatabase(settings.LIVE_DATABASE_NAME)
         db_manager.Employee._meta.database = db_manager.db
         db_manager.LogEntry._meta.database = db_manager.db
+    
+    def create_mixed_test_data(self):
+        """Creates three test users and four test log entries, writes them
+        to the database and returns the dataset
+        """
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1 foo"},
+            {'id': 2, 'name': "Test Employee 2 foo"},
+            {'id': 3, 'name': "Test Employee 3 bar"},
+        ]
+        test_log_entries = [
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,1,2)),
+                ('task_name', 'Test task alpha'),
+                ('duration', 1),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,3,4)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 2),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[2]['name']),
+                ('date', datetime.date(2018,5,6)),
+                ('task_name', 'Test task bravo'),
+                ('duration', 3),
+                ('notes', 'Notes'),
+            ]),
+            OrderedDict([
+                ('name', test_employees[1]['name']),
+                ('date', datetime.date(2018,7,8)),
+                ('task_name', 'Test task charlie'),
+                ('duration', 4),
+                ('notes', 'Notes'),
+            ]),
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            for entry in test_log_entries:
+                if employee['name'] == entry['name']:
+                    db_manager.LogEntry.create(
+                        employee=e[0],
+                        date=entry['date'],
+                        task_name=entry['task_name'],
+                        duration=entry['duration'],
+                        notes=entry['notes']
+                    )
+        return {
+            'test_employees': test_employees,
+            'test_log_entries': test_log_entries 
+        }
+
 
     # Setup and Teardown
     # ------------------
@@ -875,52 +931,10 @@ class MenuTests(unittest.TestCase):
     def test_search_text_search_retrieves_all_matching_records(self):
         """Ensure that all records matching the specified string (and only)
         those records are retrieved from the DB"""
-        test_employees = [
-            {'id': 1, 'name': "Test Employee 1 foo"},
-            {'id': 2, 'name': "Test Employee 2 foo"},
-            {'id': 3, 'name': "Test Employee 3 bar"},
-        ]
-        test_log_entries = [
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,1,2)),
-                ('task_name', 'Test task alpha'),
-                ('duration', 1),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[1]['name']),
-                ('date', datetime.date(2018,3,4)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 2),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[2]['name']),
-                ('date', datetime.date(2018,5,6)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 3),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,7,8)),
-                ('task_name', 'Test task charlie'),
-                ('duration', 4),
-                ('notes', 'Notes'),
-            ]),
-        ]
-        for employee in test_employees:
-            e = db_manager.Employee.get_or_create(name=employee['name'])
-            for entry in test_log_entries:
-                if employee['name'] == entry['name']:
-                    db_manager.LogEntry.create(
-                        employee=e[0],
-                        date=entry['date'],
-                        task_name=entry['task_name'],
-                        duration=entry['duration'],
-                        notes=entry['notes']
-                    )
+        # create some db records
+        dataset = self.create_mixed_test_data()
+        test_employees = dataset['test_employees']
+        test_log_entries = dataset['test_log_entries']
         test_search_string = 'bravo'
         
         with patch('builtins.input', side_effect=test_search_string):
@@ -938,52 +952,8 @@ class MenuTests(unittest.TestCase):
     def test_search_test_search_returns_correct_menu(self):
         """Ensure that the correct next menu is loaded.
         """
-        test_employees = [
-            {'id': 1, 'name': "Test Employee 1 foo"},
-            {'id': 2, 'name': "Test Employee 2 foo"},
-            {'id': 3, 'name': "Test Employee 3 bar"},
-        ]
-        test_log_entries = [
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,1,2)),
-                ('task_name', 'Test task alpha'),
-                ('duration', 1),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[1]['name']),
-                ('date', datetime.date(2018,3,4)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 2),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[2]['name']),
-                ('date', datetime.date(2018,5,6)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 3),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,7,8)),
-                ('task_name', 'Test task charlie'),
-                ('duration', 4),
-                ('notes', 'Notes'),
-            ]),
-        ]
-        for employee in test_employees:
-            e = db_manager.Employee.get_or_create(name=employee['name'])
-            for entry in test_log_entries:
-                if employee['name'] == entry['name']:
-                    db_manager.LogEntry.create(
-                        employee=e[0],
-                        date=entry['date'],
-                        task_name=entry['task_name'],
-                        duration=entry['duration'],
-                        notes=entry['notes']
-                    )
+        # create some db records
+        dataset = self.create_mixed_test_data()
         test_search_string = 'bravo'
         
         with patch('builtins.input', side_effect=test_search_string):
@@ -1002,52 +972,8 @@ class MenuTests(unittest.TestCase):
         the new values supplied by the user
         """
         # create some db records
-        test_employees = [
-            {'id': 1, 'name': "Test Employee 1 foo"},
-            {'id': 2, 'name': "Test Employee 2 foo"},
-            {'id': 3, 'name': "Test Employee 3 bar"},
-        ]
-        test_log_entries = [
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,1,2)),
-                ('task_name', 'Test task alpha'),
-                ('duration', 1),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[1]['name']),
-                ('date', datetime.date(2018,3,4)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 2),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[2]['name']),
-                ('date', datetime.date(2018,5,6)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 3),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,7,8)),
-                ('task_name', 'Test task charlie'),
-                ('duration', 4),
-                ('notes', 'Notes'),
-            ]),
-        ]
-        for employee in test_employees:
-            e = db_manager.Employee.get_or_create(name=employee['name'])
-            for entry in test_log_entries:
-                if employee['name'] == entry['name']:
-                    db_manager.LogEntry.create(
-                        employee=e[0],
-                        date=entry['date'],
-                        task_name=entry['task_name'],
-                        duration=entry['duration'],
-                        notes=entry['notes']
-                    )
+        dataset = self.create_mixed_test_data()
+        test_log_entries = dataset['test_log_entries']
         # set the menu instance's `records` property
         self.menu.records = test_log_entries
         record_index = 1
@@ -1167,52 +1093,8 @@ class MenuTests(unittest.TestCase):
         the new values supplied by the user
         """
         # create some db records
-        test_employees = [
-            {'id': 1, 'name': "Test Employee 1 foo"},
-            {'id': 2, 'name': "Test Employee 2 foo"},
-            {'id': 3, 'name': "Test Employee 3 bar"},
-        ]
-        test_log_entries = [
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,1,2)),
-                ('task_name', 'Test task alpha'),
-                ('duration', 1),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,3,4)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 2),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[2]['name']),
-                ('date', datetime.date(2018,5,6)),
-                ('task_name', 'Test task bravo'),
-                ('duration', 3),
-                ('notes', 'Notes'),
-            ]),
-            OrderedDict([
-                ('name', test_employees[1]['name']),
-                ('date', datetime.date(2018,7,8)),
-                ('task_name', 'Test task charlie'),
-                ('duration', 4),
-                ('notes', 'Notes'),
-            ]),
-        ]
-        for employee in test_employees:
-            e = db_manager.Employee.get_or_create(name=employee['name'])
-            for entry in test_log_entries:
-                if employee['name'] == entry['name']:
-                    db_manager.LogEntry.create(
-                        employee=e[0],
-                        date=entry['date'],
-                        task_name=entry['task_name'],
-                        duration=entry['duration'],
-                        notes=entry['notes']
-                    )
+        dataset = self.create_mixed_test_data()
+        test_log_entries = dataset['test_log_entries']
         # set the menu instance's `records` property
         self.menu.records = test_log_entries
         record_index = 1
@@ -1322,8 +1204,20 @@ class MenuTests(unittest.TestCase):
 
         self.assertEqual(result, expected_result)
 
-
     # select_detail
+    def test_select_detail_displays_the_correct_record(self):
+        """Ensure that the record chosen by the user is the record that
+        gets loaded into current_record
+        """
+        # make some DB entries
+        # choose an index
+        # execute the method
+        # assert that the db entry that current_record looks up is the same
+        #   as the one chosen.
+        pass
+    
+    def test_select_detail_returns_the_correct_menu(self):
+        pass
 
     # delete_record
 
