@@ -1111,12 +1111,6 @@ class MenuTests(unittest.TestCase):
         
     def test_edit_record_returns_the_correct_menu(self):
         """Ensure that the method returns the correct next menu"""
-        """Ensure that the record retrieved from the DB corresponds to the
-        record being requested by the user.
-
-        This also ensures that the new value of the DB entry corresponds to 
-        the new values supplied by the user
-        """
         # create some db records
         test_employees = [
             {'id': 1, 'name': "Test Employee 1 foo"},
@@ -1278,16 +1272,55 @@ class MenuTests(unittest.TestCase):
             ))
         self.assertEqual(len(new_query), 1) # new_query should return one result
         self.assertEqual(len(repeat_old_query), 0) # query should be empty
-    
-    def test_edit_current_record_applies_the_correct_changes(self):
-        """Ensure that the new value of the DB entry corresponds to the
-        new values supplied by the user
-        """
-        pass
-    
+        
     def test_edit_current_record_returns_the_correct_menu(self):
         """Ensure that the method returns the correct next menu"""
-        pass
+        # create some db records
+        test_employees = [
+            {'id': 1, 'name': "Test Employee 1 foo"},
+        ]
+        test_log_entries = [
+            OrderedDict([
+                ('name', test_employees[0]['name']),
+                ('date', datetime.date(2018,1,2)),
+                ('task_name', 'Test task alpha'),
+                ('duration', 1),
+                ('notes', 'Notes'),
+            ]),
+        ]
+        for employee in test_employees:
+            e = db_manager.Employee.get_or_create(name=employee['name'])
+            for entry in test_log_entries:
+                if employee['name'] == entry['name']:
+                    db_manager.LogEntry.create(
+                        employee=e[0],
+                        date=entry['date'],
+                        task_name=entry['task_name'],
+                        duration=entry['duration'],
+                        notes=entry['notes']
+                    )
+        # set the menu instance's `records` property
+        self.menu.records = test_log_entries
+        record_index = 0
+        self.menu.current_record = record_index
+
+        # handle the user input to select the record
+        # handle the user input to specify the new values for the record
+        user_inputs = [
+            "New Test Employee",
+            "2017-10-05",
+            "New Test Task",
+            "55",
+            "New Note"
+        ]
+        
+        # execute the method
+        with patch('builtins.input', side_effect=user_inputs):
+            result = self.menu.edit_current_record()
+        
+        expected_result = self.menu.main_menu
+
+        self.assertEqual(result, expected_result)
 
 
     # select_detail
