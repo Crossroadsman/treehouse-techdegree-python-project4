@@ -1200,10 +1200,52 @@ class MenuTests(unittest.TestCase):
 
     # delete_record
     def test_delete_record_deletes_the_specified_record(self):
-        pass
+        """Ensure the specified record is no longer available after deletion
+        """
+        # create some db records
+        dataset = self.create_mixed_test_data()
+        test_log_entries = dataset['test_log_entries']
+        # set the menu instance's `records` property
+        self.menu.records = test_log_entries
+        record_index = 1
+
+        # handle the user input to select the record
+        user_input = str(record_index + 1)
+        
+        # get the requested record from the db before deletion
+        old_query = self.base_query(test_log_entries[record_index])
+        self.assertEqual(len(old_query), 1)
+        
+        # execute the method
+        with patch('builtins.input', side_effect=user_input):
+            self.menu.delete_record()
+        
+        # verify the record that was deleted is the one selected by the user
+        # (make sure we can no longer get the record with the old details)
+        repeat_old_query = self.base_query(test_log_entries[record_index])
+
+        self.assertEqual(len(repeat_old_query), 0) # query should be empty
     
     def test_delete_record_returns_the_correct_menu(self):
-        pass
+        """Ensure the correct menu is returned
+        """
+        # create some db records
+        dataset = self.create_mixed_test_data()
+        test_log_entries = dataset['test_log_entries']
+        # set the menu instance's `records` property
+        self.menu.records = test_log_entries
+        record_index = 1
+
+        # handle the user input to select the record
+        user_input = str(record_index + 1)
+        
+        # execute the method
+        with patch('builtins.input', side_effect=user_input):
+            result = self.menu.delete_record()
+        
+        expected_result = self.menu.main_menu
+
+        self.assertEqual(result, expected_result)
 
     # delete_current_record
     def test_delete_current_record_deletes_the_current_record(self):
