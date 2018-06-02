@@ -525,7 +525,6 @@ class Menu:
                 continue
             else:
                 date = user_entry[1]
-                date_string = self.date_to_string(date, target='file')
         print("New name of the Task")
         input_text = input("Enter the name of the task > ")
         task_name = input_text
