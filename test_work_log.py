@@ -1448,6 +1448,52 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     # validate_date_entry
+    def test_validate_date_entry_returns_correct_iso_date(self):
+        """Make sure that a valid iso date gets converted into a valid
+        datetime object and is properly returned
+        """
+        date_string = "2018-01-21"
+        date_format = settings.DATE_FORMATS['iso 8601']
+        date_object = datetime.datetime.strptime(
+            date_string,
+            date_format['datetime format'])
+
+        result = self.menu.validate_date_entry(date_string, date_format)
+
+        expected_result = (None, date_object)
+
+        self.assertEqual(result, expected_result)
+    
+    def test_validate_date_entry_returns_correct_ValueError(self):
+        """Make sure that an invalid iso date returns the appropriate error
+        """
+        date_string = "2018-21-01"
+        date_format = settings.DATE_FORMATS['iso 8601']
+
+        error_text = "{} is not valid in format {}".format(
+            date_string,
+            date_format['UI format']
+        )
+
+        result = self.menu.validate_date_entry(date_string, date_format)
+
+        expected_result = (error_text, None)
+
+        self.assertEqual(result, expected_result)
+
+    def test_validate_date_entry_returns_correct_outOfBounds(self):
+        """Make sure that a future date returns the appropriate error
+        """
+        date_string = "3018-01-21"
+        date_format = settings.DATE_FORMATS['iso 8601']
+
+        error_text = "dates in the future are not permitted"
+
+        result = self.menu.validate_date_entry(date_string, date_format)
+
+        expected_result = (error_text, None)
+
+        self.assertEqual(result, expected_result)
 
     # date_entry
 
