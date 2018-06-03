@@ -1496,8 +1496,39 @@ class MenuTests(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     # date_entry
+    def test_date_entry_returns_correct_value_for_date(self):
+        """Make sure that a valid date gets returned in the proper format
+        """
+        date_string = "2018-01-21"
+        date_format = settings.DATE_FORMATS['iso 8601']
+        self.menu.OPTIONS['date format'] = date_format
+
+        user_input = [date_string]
+        
+        with patch('builtins.input', side_effect=user_input):
+            result = self.menu.date_entry()
+        
+        expected_result = (
+            None,
+            datetime.datetime.strptime(date_string,
+                                       date_format['datetime format'])
+        )
+
+        self.assertEqual(result, expected_result)
+
 
     # date_to_string
+    def test_date_to_string_returns_valid_string(self):
+        """Make sure that a valid date string gets returned"""
+        date_string = "2018-01-21"
+        date_format = "%Y-%m-%d"
+        date_object = datetime.datetime.strptime(
+            date_string,
+            date_format
+        )
+        result = self.menu.date_to_string(date_object)
+
+        self.assertEqual(result, date_string)
 
 # ------------------------
 
