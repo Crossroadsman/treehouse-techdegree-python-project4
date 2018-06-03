@@ -42,7 +42,7 @@ class DBManager:
 
     def add_entry(self, entry):
         """Add an entry. Writes the specified entry to the database.
-        
+
         The entry should be in the form of a dict or OrderedDict.
         """
         try:
@@ -64,7 +64,7 @@ class DBManager:
 
     def edit_entry(self, entry, new_value):
         """Edits an existing entry.
-        
+
         `entry` and `new_value` should be key-value pairs (e.g., dict or
         OrderedDict).
 
@@ -108,7 +108,7 @@ class DBManager:
 
     def view_employees(self):
         """Get all employees who have made entries.
-        
+
         Returns a list of records (where each record is an OrderedDict)
         """
         # join() defaults to inner join
@@ -119,7 +119,7 @@ class DBManager:
 
     def view_dates(self, sorted=True):
         """get all unique date records.
-        
+
         Returns them as a list of OrderedDicts.
         """
         query = LogEntry.select(LogEntry.date).distinct()
@@ -129,7 +129,7 @@ class DBManager:
 
     def view_entries_for_date(self, date):
         """Get all the entries for the given date.
-        
+
         Return the entries as a list of OrderedDicts.
         """
         query = (LogEntry
@@ -168,7 +168,7 @@ class DBManager:
     def view_entries_with_text(self, text_string):
         """Get all entries where any of the text fields contains the
         specified text string.
-        
+
         Return them as a list of OrderedDicts.
         """
         query = (LogEntry
@@ -184,7 +184,7 @@ class DBManager:
     def view_names_with_text(self, text_string):
         """Get all employee names where any of the text in the name matches
         the specified text string.
-        
+
         Returns them as a list of OrderedDicts.
         """
         Employee.select(Employee.name).join(LogEntry).distinct()
@@ -217,7 +217,7 @@ class DBManager:
         return self.records_to_list(query)
 
     def view_entry(self, entry, return_model=False):
-        """Gets a single entry from the database that matches the 
+        """Gets a single entry from the database that matches the
         specifications from entry.
 
         Returns a single entry:
@@ -283,6 +283,7 @@ class DBManager:
         return list
 
 # -- Database Model Classes --
+
 
 class Employee(Model):
     """This is the class to represent an employee"""
