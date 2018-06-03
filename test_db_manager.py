@@ -33,7 +33,7 @@ class DBManagerTests(unittest.TestCase):
         db_manager.db = SqliteDatabase(settings.UNITTEST_DATABASE_NAME)
         db_manager.Employee._meta.database = db_manager.db
         db_manager.LogEntry._meta.database = db_manager.db
-        
+
         # delete all test data
         q = db_manager.LogEntry.delete()
         q.execute()
@@ -81,18 +81,18 @@ class DBManagerTests(unittest.TestCase):
         test_employee_nle_2_data = {'name': 'test user 4 (no l.e.)'}
         # create 2 log entries (1 for each employee with logentry)
         test_log_entry_data_1 = {
-            'name' : test_employee_le_1_data['name'],
-            'date' : datetime.date(2018,5,24),
-            'task_name' : 'test_entry',
-            'duration' : 11,
-            'notes' : 'This is for testing record retrieval'
+            'name': test_employee_le_1_data['name'],
+            'date': datetime.date(2018, 5, 24),
+            'task_name': 'test_entry',
+            'duration': 11,
+            'notes': 'This is for testing record retrieval'
         }
         test_log_entry_data_2 = {
-            'name' : test_employee_le_2_data['name'],
-            'date' : datetime.date(2018,5,24),
-            'task_name' : 'test_entry',
-            'duration' : 12,
-            'notes' : 'This is for testing record retrieval'
+            'name': test_employee_le_2_data['name'],
+            'date': datetime.date(2018, 5, 24),
+            'task_name': 'test_entry',
+            'duration': 12,
+            'notes': 'This is for testing record retrieval'
         }
         # write the test data to the database
         employee_record_1 = db_manager.Employee.get_or_create(
@@ -138,39 +138,39 @@ class DBManagerTests(unittest.TestCase):
         test_employee_data = {'name': 'date test user'}
         # create 5 log entries (4 unique dates and 1 duplicated)
         test_log_entry_data_1 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(1999,1,15),
-            'task_name' : 'test_date_entry',
-            'duration' : 10,
-            'notes' : 'This is for testing retrieval by date'
+            'name': test_employee_data['name'],
+            'date': datetime.date(1999, 1, 15),
+            'task_name': 'test_date_entry',
+            'duration': 10,
+            'notes': 'This is for testing retrieval by date'
         }
         test_log_entry_data_2 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2010,5,25),
-            'task_name' : 'test_date_entry',
-            'duration' : 20,
-            'notes' : 'This is also for testing retrieval by date'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2010, 5, 25),
+            'task_name': 'test_date_entry',
+            'duration': 20,
+            'notes': 'This is also for testing retrieval by date'
         }
         test_log_entry_data_3 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2018,11,30),
-            'task_name' : 'test_date_entry',
-            'duration' : 30,
-            'notes' : 'This is still for testing retrieval by date'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2018, 11, 30),
+            'task_name': 'test_date_entry',
+            'duration': 30,
+            'notes': 'This is still for testing retrieval by date'
         }
         test_log_entry_data_4 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2010,5,25),
-            'task_name' : 'test_date_entry',
-            'duration' : 40,
-            'notes' : 'This is still also for testing retrieval by date'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2010, 5, 25),
+            'task_name': 'test_date_entry',
+            'duration': 40,
+            'notes': 'This is still also for testing retrieval by date'
         }
         test_log_entry_data_5 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2015,12,1),
-            'task_name' : 'test_date_entry',
-            'duration' : 50,
-            'notes' : 'This is yet still also for testing retrieval by date'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2015, 12, 1),
+            'task_name': 'test_date_entry',
+            'duration': 50,
+            'notes': 'This is yet still also for testing retrieval by date'
         }
         # write the test data to the database
         employee_record = db_manager.Employee.get_or_create(
@@ -221,7 +221,7 @@ class DBManagerTests(unittest.TestCase):
                 test_log_entry_data_5
             ]
         }
-    
+
     def create_test_durations(self):
         """Creates one user and four log entries and writes them to the DB
         then returns a dictionary containing the user and log entries
@@ -230,32 +230,32 @@ class DBManagerTests(unittest.TestCase):
         test_employee_data = {'name': 'duration test user'}
         # create 4 log entries (3 unique durations and 1 duplicated)
         test_log_entry_data_1 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(1999,1,15),
-            'task_name' : 'test_duration_entry',
-            'duration' : 10,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_data['name'],
+            'date': datetime.date(1999, 1, 15),
+            'task_name': 'test_duration_entry',
+            'duration': 10,
+            'notes': 'This is for testing retrieval by duration'
         }
         test_log_entry_data_2 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2010,5,25),
-            'task_name' : 'test_duration_entry',
-            'duration' : 20,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2010, 5, 25),
+            'task_name': 'test_duration_entry',
+            'duration': 20,
+            'notes': 'This is for testing retrieval by duration'
         }
         test_log_entry_data_3 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2018,11,30),
-            'task_name' : 'test_duration_entry',
-            'duration' : 30,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2018, 11, 30),
+            'task_name': 'test_duration_entry',
+            'duration': 30,
+            'notes': 'This is for testing retrieval by duration'
         }
         test_log_entry_data_4 = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2010,5,25),
-            'task_name' : 'test_duration_entry',
-            'duration' : 20,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2010, 5, 25),
+            'task_name': 'test_duration_entry',
+            'duration': 20,
+            'notes': 'This is for testing retrieval by duration'
         }
         # write the test data to the database
         employee_record = db_manager.Employee.get_or_create(
@@ -309,32 +309,32 @@ class DBManagerTests(unittest.TestCase):
         test_employee_3_data = {'name': 'third test user'}
         # create 4 log entries (3 unique users and 1 duplicated)
         test_log_entry_data_1 = {
-            'name' : test_employee_1_data['name'],
-            'date' : datetime.date(1999,1,15),
-            'task_name' : 'test_duration_entry',
-            'duration' : 10,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_1_data['name'],
+            'date': datetime.date(1999, 1, 15),
+            'task_name': 'test_duration_entry',
+            'duration': 10,
+            'notes': 'This is for testing retrieval by duration'
         }
         test_log_entry_data_2 = {
-            'name' : test_employee_2_data['name'],
-            'date' : datetime.date(2010,5,25),
-            'task_name' : 'test_duration_entry',
-            'duration' : 20,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_2_data['name'],
+            'date': datetime.date(2010, 5, 25),
+            'task_name': 'test_duration_entry',
+            'duration': 20,
+            'notes': 'This is for testing retrieval by duration'
         }
         test_log_entry_data_3 = {
-            'name' : test_employee_3_data['name'],
-            'date' : datetime.date(2018,11,30),
-            'task_name' : 'test_duration_entry',
-            'duration' : 30,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_3_data['name'],
+            'date': datetime.date(2018, 11, 30),
+            'task_name': 'test_duration_entry',
+            'duration': 30,
+            'notes': 'This is for testing retrieval by duration'
         }
         test_log_entry_data_4 = {
-            'name' : test_employee_2_data['name'],
-            'date' : datetime.date(2010,5,25),
-            'task_name' : 'test_duration_entry',
-            'duration' : 20,
-            'notes' : 'This is for testing retrieval by duration'
+            'name': test_employee_2_data['name'],
+            'date': datetime.date(2010, 5, 25),
+            'task_name': 'test_duration_entry',
+            'duration': 20,
+            'notes': 'This is for testing retrieval by duration'
         }
         # write the test data to the database
         employee_record_1 = db_manager.Employee.get_or_create(
@@ -397,7 +397,7 @@ class DBManagerTests(unittest.TestCase):
         """
         self.set_test_database()
         self.dbm = db_manager.DBManager()
-    
+
     def tearDown(self):
         self.revert_database()
 
@@ -405,7 +405,7 @@ class DBManagerTests(unittest.TestCase):
     # -------------
     '''
     def test_assertcountequal(self):
-        """This is just a quick illustration of 
+        """This is just a quick illustration of
         `self.assertCountEqual(a, b)` : check a and b have the same number of
                                         the same elements, regardless of order
         """
@@ -431,13 +431,13 @@ class DBManagerTests(unittest.TestCase):
         """Check that data is correctly written to database"""
         test_employee_data = {'name': 'test user (add)'}
         test_log_entry_data = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2018,1,1),
-            'task_name' : 'test_entry_add_entry',
-            'duration' : 17,
-            'notes' : 'This is a test of adding an entry',
+            'name': test_employee_data['name'],
+            'date': datetime.date(2018, 1, 1),
+            'task_name': 'test_entry_add_entry',
+            'duration': 17,
+            'notes': 'This is a test of adding an entry',
         }
-        
+
         # this is the actual transaction being tested:
         self.dbm.add_entry(test_log_entry_data)
 
@@ -445,19 +445,19 @@ class DBManagerTests(unittest.TestCase):
             test_log_entry_data
         )
         self.assertEqual(test_log_entry_data, retrieved_log_entry_dict)
-    
+
     # edit_entry
     def test_edit_entry_correctly_changes_record(self):
         """Test that database records are correctly edited"""
-        
+
         # create a database entry (to change)
         test_employee_data = {'name': 'test user (edit)'}
         test_log_entry_data = {
-            'name' : test_employee_data['name'],
-            'date' : datetime.date(2018,1,1),
-            'task_name' : 'test_entry_edit_entry',
-            'duration' : 18,
-            'notes' : 'This is a test of editing an entry'
+            'name': test_employee_data['name'],
+            'date': datetime.date(2018, 1, 1),
+            'task_name': 'test_entry_edit_entry',
+            'duration': 18,
+            'notes': 'This is a test of editing an entry'
         }
         employee_record = db_manager.Employee.get_or_create(
             name=test_employee_data["name"]
@@ -473,31 +473,29 @@ class DBManagerTests(unittest.TestCase):
         # specify changed entry
         edited_employee_data = {'name': 'test user (edited)'}
         edited_log_entry_data = {
-            'name' : edited_employee_data['name'],
-            'date' : datetime.date(2017,2,2),
-            'task_name' : 'test_entry_edit_entry (edited)',
-            'duration' : 28,
-            'notes' : 'This is a test of editing an entry (edited)',
+            'name': edited_employee_data['name'],
+            'date': datetime.date(2017, 2, 2),
+            'task_name': 'test_entry_edit_entry (edited)',
+            'duration': 28,
+            'notes': 'This is a test of editing an entry (edited)',
         }
-        
+
         # write changes to database using dbm method
         # (this is the actual transaction being tested)
         self.dbm.edit_entry(test_log_entry_data, edited_log_entry_data)
-        
+
         # read record back from database &
         # convert record to dict
         retrieved_log_entry_dict = self.retrieve_database_entry(
             edited_log_entry_data
         )
-        
+
         # check changed record == changed entry
         self.assertEqual(edited_log_entry_data, retrieved_log_entry_dict)
-    
+
     def test_edit_entry_invalid_employee_raises_doesnotexist(self):
         """Ensure that passing a missing employee raises doesnot exist"""
         pass
-    
-    def test_edit_entry_invalid
 
     # view_employees
     def test_view_employees_returns_all_employees_who_have_entries(self):
@@ -515,7 +513,7 @@ class DBManagerTests(unittest.TestCase):
         employees_le.append(test_data['test_employee_le_2'])
 
         self.assertEqual(employee_records, employees_le)
-    
+
     def test_view_employees_returns_no_employees_without_entries(self):
         """Confirm that querying the database gets no employees
         who have not created entries
@@ -535,7 +533,7 @@ class DBManagerTests(unittest.TestCase):
     # view_dates
     def test_view_dates_returns_all_dates(self):
         """Ensure that every date in the test_data_set is returned
-        
+
         We can test this by checking that the length of the returned
         iterable of dates is equal to the number of unique dates in
         the test dataset (we have a separate test to ensure no duplicates)
@@ -551,7 +549,7 @@ class DBManagerTests(unittest.TestCase):
 
     def test_view_dates_returns_no_duplicates(self):
         """Ensure that no duplicate dates are returned.
-        
+
         We know that there are no duplicates if the length of the iterable
         containing the dates is the same as the set of the iterable containing
         the dates
@@ -563,7 +561,7 @@ class DBManagerTests(unittest.TestCase):
         dates = []
         for record in records:
             dates.append(record['date'])
-        
+
         self.assertEqual(len(set(dates)), len(dates))
 
     # view_entries_for_date
@@ -573,13 +571,13 @@ class DBManagerTests(unittest.TestCase):
         are returned.
         """
         data = self.create_test_dates()['test_log_entry_data']
-        date = data[1]['date'] # the duplicated date
+        date = data[1]['date']  # the duplicated date
         matching_dates = [datum for datum in data if datum['date'] == date]
 
         records = self.dbm.view_entries_for_date(date)
 
         self.assertCountEqual(matching_dates, records)
-    
+
     # view_entries_for_duration
     def test_view_entries_for_duration_returns_all_matches(self):
         """Ensure that all the entries with a duration matching the query
@@ -587,7 +585,7 @@ class DBManagerTests(unittest.TestCase):
         are returned.
         """
         data = self.create_test_durations()['test_log_entry_data']
-        duration = data[1]['duration'] # the duplicated date
+        duration = data[1]['duration']  # the duplicated date
         matches = [datum for datum in data if datum['duration'] == duration]
 
         records = self.dbm.view_entries_for_duration(duration)
@@ -597,17 +595,17 @@ class DBManagerTests(unittest.TestCase):
     # view_entries_for_date_range
     def test_view_entries_for_date_range_returns_all_matches(self):
         """Ensure that all the entries with a date in the specified
-        range that match the query are returned and no entries with a date not 
+        range that match the query are returned and no entries with a date not
         matching the query are returned.
         """
         data = self.create_test_dates()['test_log_entry_data']
-        start = datetime.date(2010,5,25)
-        end = datetime.date(2015,12,1)
+        start = datetime.date(2010, 5, 25)
+        end = datetime.date(2015, 12, 1)
         matching_dates = []
         for datum in data:
             if datum['date'] >= start and datum['date'] <= end:
                 matching_dates.append(datum)
-        
+
         records = self.dbm.view_entries_for_date_range(start, end)
 
         self.assertCountEqual(matching_dates, records)
@@ -622,9 +620,11 @@ class DBManagerTests(unittest.TestCase):
         pattern = 'still'
         matching_data = []
         for datum in data:
-            if (pattern in datum['name'] or
+            if (
+                pattern in datum['name'] or
                 pattern in datum['task_name'] or
-                pattern in datum['notes']):
+                pattern in datum['notes']
+            ):
                 matching_data.append(datum)
 
         records = self.dbm.view_entries_with_text(pattern)
@@ -655,11 +655,11 @@ class DBManagerTests(unittest.TestCase):
 
         records = self.dbm.view_everything()
         records = [dict(entry) for entry in records]
-        
+
         self.assertEqual(len(data), len(records))
         for datum in data:
             self.assertIn(datum, records)
-    
+
     def test_view_everything_sorted_returns_sorted_results(self):
         """When date_sorted=True, ensure that the results are sorted
         in ascending date order.
@@ -678,14 +678,14 @@ class DBManagerTests(unittest.TestCase):
 
         # assert that the order of dates == the order from the dataset
         self.assertEqual(sorted_dates, record_dates)
-    
+
     def test_view_everything_employee_filters_by_employee(self):
         """When employee is not set to None, ensure that returned records
         are only for the specified employee
         """
         # load mixed_data into db
         data = self.create_test_employees()
-        employee = data['test_employee_data'][1] # duplicated employee
+        employee = data['test_employee_data'][1]  # duplicated employee
 
         # view_everything with duplicated employee
         records = self.dbm.view_everything(employee=employee['name'])
@@ -693,7 +693,7 @@ class DBManagerTests(unittest.TestCase):
         # check that the length of the returned records == number of
         #   elements in dataset with that employee
         self.assertEqual(len(records), 2)
-        
+
         # check that all returned records are for that employee
         for record in records:
             self.assertEqual(record['name'], employee['name'])
@@ -706,7 +706,7 @@ class DBManagerTests(unittest.TestCase):
         record = self.dbm.view_entry(data)
 
         self.assertEqual(data, record)
-    
+
     def test_view_entry_raises_DoesNotExist_for_missing_employee(self):
         """If an invalid employee is provided, should raise DoesNotExist"""
         data = self.create_mixed_test_data()
@@ -732,27 +732,17 @@ class DBManagerTests(unittest.TestCase):
         real_employee = db_manager.Employee.get(
             name=real_employee_data['name']
         )
-        
+
         nonexistent_logentry_data = {
             'name': real_employee.name,
-            'date': datetime.date(2018,1,1),
+            'date': datetime.date(2018, 1, 1),
             'task_name': "Non-existent task for non-existent logentry",
             'duration': 1,
             'notes': "Non-existent note for non-existent logentry"
         }
-        #real_employee_record = db_manager.Employee.get(
-        #    name=real_employee_data['name']
-        #)
 
         with self.assertRaises(DoesNotExist):
             self.dbm.view_entry(nonexistent_logentry_data)
-            #db_manager.LogEntry.get(
-            #    employee=real_employee_record,
-            #    task_name=nonexistent_logentry_data['task_name'],
-            #    date=nonexistent_logentry_data['date'],
-            #    notes=nonexistent_logentry_data['notes'],
-            #    duration=nonexistent_logentry_data['duration']
-            #)
 
     # delete_entry
     def test_delete_entry_removes_the_specified_record(self):
@@ -782,7 +772,7 @@ class DBManagerTests(unittest.TestCase):
         number_records_after_deletion = len(records_after_deletion)
 
         # Make sure that only one record was deleted
-        self.assertEqual(number_records_before_deletion - 1, 
+        self.assertEqual(number_records_before_deletion - 1,
                          number_records_after_deletion)
 
         # Make sure that we now get DoesNotExist when we try to get the
@@ -795,7 +785,7 @@ class DBManagerTests(unittest.TestCase):
                 notes=datum_to_delete['notes'],
                 duration=datum_to_delete['duration']
             )
-    
+
     # record_to_dict
     def test_record_to_dict_returns_orderedDict_matching_record(self):
         """Ensure that the returned object has the same elements as the record.
@@ -830,7 +820,6 @@ class DBManagerTests(unittest.TestCase):
         )
 
         self.assertEqual(log_entry, log_entry_from_od)
-
 
     def test_record_to_dict_returns_orderedDict(self):
         """Ensure that the returned collection is actually of type OrderedDict.
