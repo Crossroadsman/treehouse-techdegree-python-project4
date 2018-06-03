@@ -1364,31 +1364,88 @@ class MenuTests(unittest.TestCase):
 
     # previous_result
     def test_previous_result_decrements_current_record(self):
-        pass
+        """Make sure that this method reduces the current_record by 1"""
+        current_record_before = 1
+        self.menu.current_record = current_record_before
+        self.menu.previous_result()
+        self.assertEqual(self.menu.current_record,
+                         current_record_before - 1)
     
     def test_previous_result_returns_correct_menu(self):
-        pass
+        """Make sure that this method returns present_next_result"""
+        current_record_before = 1
+        self.menu.current_record = current_record_before
+        
+        result = self.menu.previous_result()
+        
+        expected_result = self.menu.present_next_result
+        
+        self.assertEqual(result, expected_result)
 
     # next_result
     def test_next_result_increments_current_record(self):
-        pass
+        """Make sure that this method increases the current_record by 1"""
+        current_record_before = 1
+        self.menu.current_record = current_record_before
+        self.menu.next_result()
+        self.assertEqual(self.menu.current_record,
+                         current_record_before + 1)
     
     def test_next_result_returns_correct_menu(self):
-        pass
+        """Make sure that this method returns present_next_result"""
+        current_record_before = 1
+        self.menu.current_record = current_record_before
+        
+        result = self.menu.next_result()
+        
+        expected_result = self.menu.present_next_result
+        
+        self.assertEqual(result, expected_result)
 
     # previous_page
     def test_previous_page_reduces_current_page_start_by_correct_amt(self):
-        pass
+        """Make sure that this method reduces the current_page_start by the
+        value specified in options
+        """
+        current_page_start_before = 1
+        page_offset = self.menu.OPTIONS['entries per page']
+        self.menu.current_page_start = current_page_start_before
+        self.menu.previous_page()
+        self.assertEqual(self.menu.current_page_start,
+                         current_page_start_before - page_offset)
     
     def test_previous_page_returns_correct_menu(self):
-        pass
+        """Make sure that this method returns present_results"""
+        current_page_start_before = 1
+        self.menu.current_page_start = current_page_start_before
+        result = self.menu.previous_page()
+        
+        expected_result = self.menu.present_results
+
+        self.assertEqual(result, expected_result)
 
     # next_page
     def test_next_page_increases_current_page_start_by_correct_amt(self):
-        pass
+        """Make sure that this method increases the current_page_start by the
+        value specified in options
+        """
+        current_page_start_before = 1
+        page_offset = self.menu.OPTIONS['entries per page']
+        self.menu.current_page_start = current_page_start_before
+        self.menu.next_page()
+        self.assertEqual(self.menu.current_page_start,
+                         current_page_start_before + page_offset)
     
     def test_next_page_returns_correct_menu(self):
-        pass
+        """Make sure that this method returns present_results"""
+        current_page_start_before = 1
+        self.menu.current_page_start = current_page_start_before
+        
+        result = self.menu.next_page()
+
+        expected_result = self.menu.present_results
+        
+        self.assertEqual(result, expected_result)
 
     # validate_date_entry
 
