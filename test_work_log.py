@@ -45,7 +45,7 @@ class MenuTests(unittest.TestCase):
         db_manager.db = SqliteDatabase(settings.UNITTEST_DATABASE_NAME)
         db_manager.Employee._meta.database = db_manager.db
         db_manager.LogEntry._meta.database = db_manager.db
-        
+
         # delete all test data
         q = db_manager.LogEntry.delete()
         q.execute()
@@ -56,7 +56,7 @@ class MenuTests(unittest.TestCase):
         db_manager.db = SqliteDatabase(settings.LIVE_DATABASE_NAME)
         db_manager.Employee._meta.database = db_manager.db
         db_manager.LogEntry._meta.database = db_manager.db
-    
+
     def create_mixed_test_data(self):
         """Creates three test users and four test log entries, writes them
         to the database and returns the dataset
@@ -69,28 +69,28 @@ class MenuTests(unittest.TestCase):
         test_log_entries = [
             OrderedDict([
                 ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,1,2)),
+                ('date', datetime.date(2018, 1, 2)),
                 ('task_name', 'Test task alpha'),
                 ('duration', 1),
                 ('notes', 'Notes'),
             ]),
             OrderedDict([
                 ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,3,4)),
+                ('date', datetime.date(2018, 3, 4)),
                 ('task_name', 'Test task bravo'),
                 ('duration', 2),
                 ('notes', 'Notes'),
             ]),
             OrderedDict([
                 ('name', test_employees[2]['name']),
-                ('date', datetime.date(2018,5,6)),
+                ('date', datetime.date(2018, 5, 6)),
                 ('task_name', 'Test task bravo'),
                 ('duration', 3),
                 ('notes', 'Notes'),
             ]),
             OrderedDict([
                 ('name', test_employees[1]['name']),
-                ('date', datetime.date(2018,7,8)),
+                ('date', datetime.date(2018, 7, 8)),
                 ('task_name', 'Test task charlie'),
                 ('duration', 4),
                 ('notes', 'Notes'),
@@ -109,11 +109,12 @@ class MenuTests(unittest.TestCase):
                     )
         return {
             'test_employees': test_employees,
-            'test_log_entries': test_log_entries 
+            'test_log_entries': test_log_entries
         }
-    
+
     def base_query(self, query_dict):
-        new_query = (db_manager
+        new_query = (
+            db_manager
             .LogEntry
             .select()
             .join(db_manager.Employee)
@@ -123,19 +124,18 @@ class MenuTests(unittest.TestCase):
                 db_manager.LogEntry.task_name == query_dict['task_name'],
                 db_manager.LogEntry.duration == query_dict['duration'],
                 db_manager.LogEntry.notes == query_dict['notes']
-            ))
+                ))
         return new_query
-
 
     # Setup and Teardown
     # ------------------
     def setUp(self):
         self.set_test_database()
         self.menu = work_log.Menu(load_menu=False)
-    
+
     def tearDown(self):
         self.revert_database()
-    
+
     # Example Tests
     # -------------
 
@@ -159,7 +159,7 @@ class MenuTests(unittest.TestCase):
             expected_results.append(value)
             with patch('builtins.input', side_effect=key):
                 results.append(self.menu.main_menu())
-        
+
         self.assertEqual(expected_results, results)
 
     # add_entry
@@ -176,18 +176,18 @@ class MenuTests(unittest.TestCase):
         ]
         with patch('builtins.input', side_effect=example_inputs):
             self.menu.add_entry()
-        
+
         query = (db_manager
-            .LogEntry
-            .select()
-            .join(db_manager.Employee)
-            .where(
-                db_manager.Employee.name == example_inputs[0],
-                db_manager.LogEntry.date == example_inputs[1],
-                db_manager.LogEntry.task_name == example_inputs[2],
-                db_manager.LogEntry.duration == example_inputs[3],
-                db_manager.LogEntry.notes == example_inputs[4]
-            ))
+                 .LogEntry
+                 .select()
+                 .join(db_manager.Employee)
+                 .where(
+                      db_manager.Employee.name == example_inputs[0],
+                      db_manager.LogEntry.date == example_inputs[1],
+                      db_manager.LogEntry.task_name == example_inputs[2],
+                      db_manager.LogEntry.duration == example_inputs[3],
+                      db_manager.LogEntry.notes == example_inputs[4]
+                   ))
         record = query[0]
         record_data = [
             record.employee.name,
@@ -210,9 +210,9 @@ class MenuTests(unittest.TestCase):
         ]
         with patch('builtins.input', side_effect=example_inputs):
             returned_menu = self.menu.add_entry()
-        
+
         self.assertEqual(returned_menu, self.menu.main_menu)
-        
+
     # options
     def test_options_date_format_choice_updates_settings(self):
         """Ensure that the options menu sets the correct settings in response
@@ -225,18 +225,17 @@ class MenuTests(unittest.TestCase):
             with patch('builtins.input', side_effect=str(i)):
                 self.menu.options()
                 results.append(self.menu.OPTIONS['date format'])
-        
-        self.assertEqual(results, expected_results)        
-    
+
+        self.assertEqual(results, expected_results)
+
     def test_options_returns_main_menu(self):
         """Ensure that the options menu finishes by returning main_menu
         """
         example_input = '1'
         with patch('builtins.input', side_effect=example_input):
             returned_menu = self.menu.options()
-        
+
         self.assertEqual(returned_menu, self.menu.main_menu)
-        
 
     # search_entries
     def test_search_entries_returns_correct_menu(self):
@@ -258,7 +257,7 @@ class MenuTests(unittest.TestCase):
             expected_results.append(value)
             with patch('builtins.input', side_effect=key):
                 results.append(self.menu.search_entries())
-        
+
         self.assertEqual(expected_results, results)
 
     # quit_program
@@ -279,14 +278,14 @@ class MenuTests(unittest.TestCase):
         test_records = [
             OrderedDict([
                 ('name', 'Test Employee 1'),
-                ('date', datetime.date(2018,5,1)),
+                ('date', datetime.date(2018, 5, 1)),
                 ('task_name', 'Test Task 1'),
                 ('duration', 1),
                 ('notes', 'This is a note for the first test task')
             ]),
             OrderedDict([
                 ('name', 'Test Employee 2'),
-                ('date', datetime.date(2018,5,2)),
+                ('date', datetime.date(2018, 5, 2)),
                 ('task_name', 'Test Task 2'),
                 ('duration', 2),
                 ('notes', 'This is a note for the second test task')
@@ -305,7 +304,7 @@ class MenuTests(unittest.TestCase):
             f_task_name,
             f_notes
         )
-        expected_output = ("\nSearch Results\n" + 
+        expected_output = ("\nSearch Results\n" +
                            "1) {}\n".format(short_form) +
                            "\n" +
                            "Available actions:\n" +
@@ -328,7 +327,7 @@ class MenuTests(unittest.TestCase):
            ```
            sys.stdout = captured_output
            ```
-        4. Run code as normal, any print() statement will go to 
+        4. Run code as normal, any print() statement will go to
            the StringIO object instead of standard out
         5. Revert stdout (will not affect the contents of the StringIO buffer)
            ```
@@ -357,7 +356,7 @@ class MenuTests(unittest.TestCase):
 
     def test_present_results_loads_correct_next_menu(self):
         # this can be just like the previous tests that return menus
-        # with the only wrinkle that we need to handle the different 
+        # with the only wrinkle that we need to handle the different
         # values for self.menu.current_page_start do determine whether
         # next or previous menus are available
         # Add an entry to the database
@@ -369,21 +368,21 @@ class MenuTests(unittest.TestCase):
         test_records = [
             OrderedDict([
                 ('name', 'Test Employee 1'),
-                ('date', datetime.date(2018,5,1)),
+                ('date', datetime.date(2018, 5, 1)),
                 ('task_name', 'Test Task 1'),
                 ('duration', 1),
                 ('notes', 'This is a note for the first test task')
             ]),
             OrderedDict([
                 ('name', 'Test Employee 2'),
-                ('date', datetime.date(2018,5,2)),
+                ('date', datetime.date(2018, 5, 2)),
                 ('task_name', 'Test Task 2'),
                 ('duration', 2),
                 ('notes', 'This is a note for the second test task')
             ]),
             OrderedDict([
                 ('name', 'Test Employee 3'),
-                ('date', datetime.date(2018,5,3)),
+                ('date', datetime.date(2018, 5, 3)),
                 ('task_name', 'Test Task 3'),
                 ('duration', 3),
                 ('notes', 'This is a note for the third test task')
@@ -408,7 +407,7 @@ class MenuTests(unittest.TestCase):
             expected_results.append(value)
             with patch('builtins.input', side_effect=key):
                 results.append(self.menu.present_results())
-        
+
         self.assertEqual(expected_results, results)
         self.menu.OPTIONS['entries per page'] = old_entries_per_page
 
@@ -422,21 +421,21 @@ class MenuTests(unittest.TestCase):
         test_records = [
             OrderedDict([
                 ('name', 'Test Employee 1'),
-                ('date', datetime.date(2018,5,1)),
+                ('date', datetime.date(2018, 5, 1)),
                 ('task_name', 'Test Task 1'),
                 ('duration', 1),
                 ('notes', 'This is a note for the first test task')
             ]),
             OrderedDict([
                 ('name', 'Test Employee 2'),
-                ('date', datetime.date(2018,5,2)),
+                ('date', datetime.date(2018, 5, 2)),
                 ('task_name', 'Test Task 2'),
                 ('duration', 2),
                 ('notes', 'This is a note for the second test task')
             ]),
             OrderedDict([
                 ('name', 'Test Employee 3'),
-                ('date', datetime.date(2018,5,3)),
+                ('date', datetime.date(2018, 5, 3)),
                 ('task_name', 'Test Task 3'),
                 ('duration', 3),
                 ('notes', 'This is a note for the third test task')
@@ -457,7 +456,7 @@ class MenuTests(unittest.TestCase):
                      line2 +
                      line3 +
                      line4
-        )
+                     )
         expected_output = (long_form +
                            "\n" +
                            "Available actions:\n" +
@@ -488,31 +487,31 @@ class MenuTests(unittest.TestCase):
         """Ensure that the correct next menu is loaded.
         """
         # this can be just like the previous tests that return menus
-        # with the only wrinkle that we need to handle the different 
+        # with the only wrinkle that we need to handle the different
         # values for self.menu.current_page_start do determine whether
         # next or previous menus are available
         # Add an entry to the database
-        
+
         # to test this we don't actually need to write to the database,
         # we just need a list of ordered_dicts in menu.records
         test_records = [
             OrderedDict([
                 ('name', 'Test Employee 1'),
-                ('date', datetime.date(2018,5,1)),
+                ('date', datetime.date(2018, 5, 1)),
                 ('task_name', 'Test Task 1'),
                 ('duration', 1),
                 ('notes', 'This is a note for the first test task')
             ]),
             OrderedDict([
                 ('name', 'Test Employee 2'),
-                ('date', datetime.date(2018,5,2)),
+                ('date', datetime.date(2018, 5, 2)),
                 ('task_name', 'Test Task 2'),
                 ('duration', 2),
                 ('notes', 'This is a note for the second test task')
             ]),
             OrderedDict([
                 ('name', 'Test Employee 3'),
-                ('date', datetime.date(2018,5,3)),
+                ('date', datetime.date(2018, 5, 3)),
                 ('task_name', 'Test Task 3'),
                 ('duration', 3),
                 ('notes', 'This is a note for the third test task')
@@ -535,9 +534,9 @@ class MenuTests(unittest.TestCase):
             expected_results.append(value)
             with patch('builtins.input', side_effect=key):
                 results.append(self.menu.present_next_result())
-        
+
         self.assertEqual(expected_results, results)
-        
+
     # search_employee
     def test_search_employee_displays_employee_names(self):
         """Ensure that what is displayed to the user is what we expect to
@@ -553,7 +552,7 @@ class MenuTests(unittest.TestCase):
             # give each employee an associated logentry
             db_manager.LogEntry.create(
                 employee=e[0],
-                date=datetime.date(2018,1,2),
+                date=datetime.date(2018, 1, 2),
                 task_name='Test task {}'.format(employee['id']),
                 duration=employee['id'],
                 notes='Note'
@@ -562,9 +561,9 @@ class MenuTests(unittest.TestCase):
         title = "\nSEARCH BY EMPLOYEE" + "\n"
         employee_rows = ""
         for employee in test_employees:
-            employee_rows += "{}) {}\n".format(employee['id'], 
+            employee_rows += "{}) {}\n".format(employee['id'],
                                                employee['name'])
-        
+
         expected_output = (title +
                            employee_rows)
 
@@ -582,7 +581,6 @@ class MenuTests(unittest.TestCase):
         sys.stdout = sys.__stdout__
         # Do any other test code (e.g., asserts)
         self.assertEqual(expected_output, captured_output.getvalue())
-        
 
     def test_search_employee_returns_the_correct_menu(self):
         """Ensure that the correct next menu is loaded.
@@ -597,17 +595,17 @@ class MenuTests(unittest.TestCase):
             # give each employee an associated logentry
             db_manager.LogEntry.create(
                 employee=e[0],
-                date=datetime.date(2018,1,2),
+                date=datetime.date(2018, 1, 2),
                 task_name='Test task {}'.format(employee['id']),
                 duration=employee['id'],
                 notes='Note'
             )
-        user_input='1'
+        user_input = '1'
         with patch('builtins.input', side_effect=user_input):
             result = self.menu.search_employee()
-        
+
         expected_result = self.menu.present_next_result
-        
+
         self.assertEqual(expected_result, result)
 
     # search_employee_text
@@ -626,7 +624,7 @@ class MenuTests(unittest.TestCase):
             e = db_manager.Employee.get_or_create(name=employee['name'])
             db_manager.LogEntry.create(
                 employee=e[0],
-                date=datetime.date(2018,1,2),
+                date=datetime.date(2018, 1, 2),
                 task_name='Test task {}'.format(employee['id']),
                 duration=employee['id'],
                 notes='Note')
@@ -636,9 +634,9 @@ class MenuTests(unittest.TestCase):
         employee_rows = ""
         for employee in test_employees:
             if test_pattern in employee['name']:
-                employee_rows += "{}) {}\n".format(employee['id'], 
+                employee_rows += "{}) {}\n".format(employee['id'],
                                                    employee['name'])
-        
+
         expected_output = (title +
                            subtitle +
                            employee_rows)
@@ -657,7 +655,7 @@ class MenuTests(unittest.TestCase):
         sys.stdout = sys.__stdout__
         # Do any other test code (e.g., asserts)
         self.assertEqual(expected_output, captured_output.getvalue())
-        
+
     def test_search_employees_returns_correct_menu(self):
         """Ensure that the correct next menu is loaded.
         """
@@ -671,17 +669,17 @@ class MenuTests(unittest.TestCase):
             # give each employee an associated logentry
             db_manager.LogEntry.create(
                 employee=e[0],
-                date=datetime.date(2018,1,2),
+                date=datetime.date(2018, 1, 2),
                 task_name='Test task {}'.format(employee['id']),
                 duration=employee['id'],
                 notes='Note'
             )
-        user_inputs=['Test', '1']
+        user_inputs = ['Test', '1']
         with patch('builtins.input', side_effect=user_inputs):
             result = self.menu.search_employee_text()
-        
+
         expected_result = self.menu.present_next_result
-        
+
         self.assertEqual(expected_result, result)
 
     # search_exact_date
@@ -692,11 +690,11 @@ class MenuTests(unittest.TestCase):
             {'id': 1, 'name': "Test Employee 1"},
         ]
         test_log_entry_dates = [
-            datetime.date(2018,1,1),
-            datetime.date(2018,1,2),
-            datetime.date(2018,3,4),
-            datetime.date(2018,5,6),
-            datetime.date(2018,5,7),
+            datetime.date(2018, 1, 1),
+            datetime.date(2018, 1, 2),
+            datetime.date(2018, 3, 4),
+            datetime.date(2018, 5, 6),
+            datetime.date(2018, 5, 7),
         ]
         e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
         # create some log entries
@@ -708,13 +706,13 @@ class MenuTests(unittest.TestCase):
                 duration=10,
                 notes='Note'
             )
-            
+
         title = "\nSEARCH EXACT DATE" + "\n"
         date_rows = ""
         for i, date in enumerate(test_log_entry_dates):
             date_string = date.strftime("%Y-%m-%d")
             date_rows += "{}) {}\n".format(i + 1, date_string)
-        
+
         expected_output = (title +
                            date_rows)
 
@@ -732,7 +730,7 @@ class MenuTests(unittest.TestCase):
         sys.stdout = sys.__stdout__
         # Do any other test code (e.g., asserts)
         self.assertEqual(expected_output, captured_output.getvalue())
-    
+
     def test_search_exact_date_returns_correct_menu(self):
         """Ensure that the correct next menu is loaded.
         """
@@ -741,11 +739,11 @@ class MenuTests(unittest.TestCase):
             {'id': 1, 'name': "Test Employee 1"},
         ]
         test_log_entry_dates = [
-            datetime.date(2018,1,1),
-            datetime.date(2018,1,2),
-            datetime.date(2018,3,4),
-            datetime.date(2018,5,6),
-            datetime.date(2018,5,7),
+            datetime.date(2018, 1, 1),
+            datetime.date(2018, 1, 2),
+            datetime.date(2018, 3, 4),
+            datetime.date(2018, 5, 6),
+            datetime.date(2018, 5, 7),
         ]
         e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
         # create some log entries
@@ -757,7 +755,7 @@ class MenuTests(unittest.TestCase):
                 duration=10,
                 notes='Note'
             )
-            
+
         example_input = ['1']
         with patch('builtins.input', side_effect=example_input):
             result = self.menu.search_exact_date()
@@ -775,11 +773,11 @@ class MenuTests(unittest.TestCase):
             {'id': 1, 'name': "Test Employee 1"},
         ]
         test_log_entry_dates = [
-            datetime.date(2018,1,1),
-            datetime.date(2018,1,2),
-            datetime.date(2018,3,4),
-            datetime.date(2018,5,6),
-            datetime.date(2018,5,7),
+            datetime.date(2018, 1, 1),
+            datetime.date(2018, 1, 2),
+            datetime.date(2018, 3, 4),
+            datetime.date(2018, 5, 6),
+            datetime.date(2018, 5, 7),
         ]
         e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
         # create some log entries
@@ -807,19 +805,20 @@ class MenuTests(unittest.TestCase):
                 ('notes', "Note")
             ])
             expected_records.append(new_record)
-        
-        start_date_string = test_log_entry_dates[start_index].strftime("%Y-%m-%d")
-        end_date_string = test_log_entry_dates[end_index].strftime("%Y-%m-%d")
+
+        fmt = "%Y-%m-%d"
+        start_date_string = test_log_entry_dates[start_index].strftime(fmt)
+        end_date_string = test_log_entry_dates[end_index].strftime(fmt)
         user_inputs = [
             start_date_string,
             end_date_string
         ]
-        
+
         with patch('builtins.input', side_effect=user_inputs):
             self.menu.search_date_range()
-        
+
         self.assertEqual(expected_records, self.menu.records)
-    
+
     def test_search_date_range_returns_correct_menu(self):
         """Ensure that the correct next menu is loaded.
         """
@@ -828,11 +827,11 @@ class MenuTests(unittest.TestCase):
             {'id': 1, 'name': "Test Employee 1"},
         ]
         test_log_entry_dates = [
-            datetime.date(2018,1,1),
-            datetime.date(2018,1,2),
-            datetime.date(2018,3,4),
-            datetime.date(2018,5,6),
-            datetime.date(2018,5,7),
+            datetime.date(2018, 1, 1),
+            datetime.date(2018, 1, 2),
+            datetime.date(2018, 3, 4),
+            datetime.date(2018, 5, 6),
+            datetime.date(2018, 5, 7),
         ]
         e = db_manager.Employee.get_or_create(name=test_employee[0]['name'])
         # create some log entries
@@ -848,16 +847,17 @@ class MenuTests(unittest.TestCase):
         start_index = 1
         end_index = -2
 
-        start_date_string = test_log_entry_dates[start_index].strftime("%Y-%m-%d")
+        fmt = "%Y-%m-%d"
+        start_date_string = test_log_entry_dates[start_index].strftime(fmt)
         end_date_string = test_log_entry_dates[end_index].strftime("%Y-%m-%d")
         user_inputs = [
             start_date_string,
             end_date_string
         ]
-        
+
         with patch('builtins.input', side_effect=user_inputs):
             result = self.menu.search_date_range()
-        
+
         expected_result = self.menu.present_next_result
 
         self.assertEqual(expected_result, result)
@@ -888,7 +888,7 @@ class MenuTests(unittest.TestCase):
                 notes='Note'
             )
         match_duration = 2
-        
+
         expected_results = []
         for duration in test_log_entry_durations:
             if duration == match_duration:
@@ -900,7 +900,7 @@ class MenuTests(unittest.TestCase):
                     ('notes', "Note")
                 ])
                 expected_results.append(new_record)
-        
+
         user_input = str(match_duration)
         with patch('builtins.input', side_effect=user_input):
             self.menu.search_time_spent()
@@ -932,7 +932,7 @@ class MenuTests(unittest.TestCase):
                 notes='Note'
             )
         match_duration = 2
-        
+
         user_input = str(match_duration)
         with patch('builtins.input', side_effect=user_input):
             result = self.menu.search_time_spent()
@@ -950,15 +950,15 @@ class MenuTests(unittest.TestCase):
         test_employees = dataset['test_employees']
         test_log_entries = dataset['test_log_entries']
         test_search_string = 'bravo'
-        
+
         with patch('builtins.input', side_effect=test_search_string):
             self.menu.search_text_search()
-        
+
         expected_results = []
         for entry in test_log_entries:
             if (test_search_string in entry['name'] or
-                test_search_string in entry['task_name'] or
-                test_search_string in entry['notes']):
+                    test_search_string in entry['task_name'] or
+                    test_search_string in entry['notes']):
                 expected_results.append(entry)
 
         self.assertEqual(expected_results, self.menu.records)
@@ -969,10 +969,10 @@ class MenuTests(unittest.TestCase):
         # create some db records
         dataset = self.create_mixed_test_data()
         test_search_string = 'bravo'
-        
+
         with patch('builtins.input', side_effect=test_search_string):
             result = self.menu.search_text_search()
-        
+
         expected_result = self.menu.present_next_result
 
         self.assertEqual(expected_result, result)
@@ -982,7 +982,7 @@ class MenuTests(unittest.TestCase):
         """Ensure that the record retrieved from the DB corresponds to the
         record being requested by the user.
 
-        This also ensures that the new value of the DB entry corresponds to 
+        This also ensures that the new value of the DB entry corresponds to
         the new values supplied by the user
         """
         # create some db records
@@ -1006,20 +1006,20 @@ class MenuTests(unittest.TestCase):
         # get the unedited requested record from the db
         old_query = self.base_query(test_log_entries[record_index])
         self.assertEqual(len(old_query), 1)
-        
+
         # execute the method
         with patch('builtins.input', side_effect=user_inputs):
             self.menu.edit_record()
-        
+
         # verify the record that was changed is the one selected by the user
         # (make sure we can get the record with the new details and we can't
         # get the record with the old details)
         new_query = self.base_query(log_entry_for_input)
         repeat_old_query = self.base_query(test_log_entries[record_index])
 
-        self.assertEqual(len(new_query), 1) # new_query should return one result
-        self.assertEqual(len(repeat_old_query), 0) # query should be empty
-        
+        self.assertEqual(len(new_query), 1)  # new_query shd return one result
+        self.assertEqual(len(repeat_old_query), 0)  # query should be empty
+
     def test_edit_record_returns_the_correct_menu(self):
         """Ensure that the method returns the correct next menu"""
         # create some db records
@@ -1029,7 +1029,7 @@ class MenuTests(unittest.TestCase):
         test_log_entries = [
             OrderedDict([
                 ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,1,2)),
+                ('date', datetime.date(2018, 1, 2)),
                 ('task_name', 'Test task alpha'),
                 ('duration', 1),
                 ('notes', 'Notes'),
@@ -1060,11 +1060,11 @@ class MenuTests(unittest.TestCase):
             "55",
             "New Note"
         ]
-        
+
         # execute the method
         with patch('builtins.input', side_effect=user_inputs):
             result = self.menu.edit_record()
-        
+
         expected_result = self.menu.main_menu
 
         self.assertEqual(result, expected_result)
@@ -1074,7 +1074,7 @@ class MenuTests(unittest.TestCase):
         """Ensure that the record retrieved from the DB corresponds to the
         record being requested by the user.
 
-        This also ensures that the new value of the DB entry corresponds to 
+        This also ensures that the new value of the DB entry corresponds to
         the new values supplied by the user
         """
         # create some db records
@@ -1097,19 +1097,19 @@ class MenuTests(unittest.TestCase):
         # get the unedited requested record from the db
         old_query = self.base_query(test_log_entries[record_index])
         self.assertEqual(len(old_query), 1)
-        
+
         # execute the method
         with patch('builtins.input', side_effect=list(user_inputs.values())):
             self.menu.edit_current_record()
-        
+
         # verify the record that was changed is the one selected by the user
         # (make sure we can get the record with the new details and we can't
         # get the record with the old details)
         new_query = self.base_query(user_inputs)
         repeat_old_query = self.base_query(test_log_entries[record_index])
-        self.assertEqual(len(new_query), 1) # new_query should return one result
-        self.assertEqual(len(repeat_old_query), 0) # query should be empty
-        
+        self.assertEqual(len(new_query), 1)  # new_query shd return one result
+        self.assertEqual(len(repeat_old_query), 0)  # query should be empty
+
     def test_edit_current_record_returns_the_correct_menu(self):
         """Ensure that the method returns the correct next menu"""
         # create some db records
@@ -1119,7 +1119,7 @@ class MenuTests(unittest.TestCase):
         test_log_entries = [
             OrderedDict([
                 ('name', test_employees[0]['name']),
-                ('date', datetime.date(2018,1,2)),
+                ('date', datetime.date(2018, 1, 2)),
                 ('task_name', 'Test task alpha'),
                 ('duration', 1),
                 ('notes', 'Notes'),
@@ -1150,11 +1150,11 @@ class MenuTests(unittest.TestCase):
             "55",
             "New Note"
         ]
-        
+
         # execute the method
         with patch('builtins.input', side_effect=user_inputs):
             result = self.menu.edit_current_record()
-        
+
         expected_result = self.menu.main_menu
 
         self.assertEqual(result, expected_result)
@@ -1174,12 +1174,12 @@ class MenuTests(unittest.TestCase):
         user_input = str(selected_index + 1)
         with patch('builtins.input', side_effect=user_input):
             self.menu.select_detail()
-        
+
         # assert that the db entry that current_record looks up is the same
         #   as the one chosen.
         self.assertEqual(test_log_entries[selected_index],
                          self.menu.records[self.menu.current_record])
-    
+
     def test_select_detail_returns_the_correct_menu(self):
         """Ensure that the method returns the correct next menu"""
         # make some DB entries
@@ -1192,7 +1192,7 @@ class MenuTests(unittest.TestCase):
         user_input = str(selected_index + 1)
         with patch('builtins.input', side_effect=user_input):
             result = self.menu.select_detail()
-        
+
         # assert that the correct menu is retured
         expected_result = self.menu.present_next_result
 
@@ -1211,21 +1211,21 @@ class MenuTests(unittest.TestCase):
 
         # handle the user input to select the record
         user_input = str(record_index + 1)
-        
+
         # get the requested record from the db before deletion
         old_query = self.base_query(test_log_entries[record_index])
         self.assertEqual(len(old_query), 1)
-        
+
         # execute the method
         with patch('builtins.input', side_effect=user_input):
             self.menu.delete_record()
-        
+
         # verify the record that was deleted is the one selected by the user
         # (make sure we can no longer get the record with the old details)
         repeat_old_query = self.base_query(test_log_entries[record_index])
 
-        self.assertEqual(len(repeat_old_query), 0) # query should be empty
-    
+        self.assertEqual(len(repeat_old_query), 0)  # query should be empty
+
     def test_delete_record_returns_the_correct_menu(self):
         """Ensure the correct menu is returned
         """
@@ -1238,11 +1238,11 @@ class MenuTests(unittest.TestCase):
 
         # handle the user input to select the record
         user_input = str(record_index + 1)
-        
+
         # execute the method
         with patch('builtins.input', side_effect=user_input):
             result = self.menu.delete_record()
-        
+
         expected_result = self.menu.main_menu
 
         self.assertEqual(result, expected_result)
@@ -1262,16 +1262,16 @@ class MenuTests(unittest.TestCase):
         # get the requested record from the db before deletion
         old_query = self.base_query(test_log_entries[record_index])
         self.assertEqual(len(old_query), 1)
-        
+
         # execute the method
         self.menu.delete_current_record()
-        
+
         # verify the record that was deleted is the one selected by the user
         # (make sure we can no longer get the record with the old details)
         repeat_old_query = self.base_query(test_log_entries[record_index])
 
-        self.assertEqual(len(repeat_old_query), 0) # query should be empty
-    
+        self.assertEqual(len(repeat_old_query), 0)   # query should be empty
+
     def test_delete_current_record_returns_the_correct_menu(self):
         """Ensure the correct menu is returned"""
         # create some db records
@@ -1284,9 +1284,9 @@ class MenuTests(unittest.TestCase):
 
         # execute the method
         result = self.menu.delete_current_record()
-        
+
         expected_result = self.menu.main_menu
-        
+
         self.assertEqual(result, expected_result)
 
     # display_entry
@@ -1294,7 +1294,7 @@ class MenuTests(unittest.TestCase):
         """Makes sure that the output displayed to the user corresponds
         to what was expected"""
         entry = self.create_mixed_test_data()['test_log_entries'][0]
-        
+
         line0 = entry['name']
         line1 = "{}: {}".format(entry['date'], entry['task_name'])
         spacer = "-" * len(line1)
@@ -1323,7 +1323,7 @@ class MenuTests(unittest.TestCase):
         """Makes sure that the output displayed to the user corresponds
         to what was expected"""
         entry = self.create_mixed_test_data()['test_log_entries'][0]
-        
+
         expected_output = ("{}: {} ({}m): {} | {}\n".format(
             entry['name'],
             entry['date'],
@@ -1344,12 +1344,12 @@ class MenuTests(unittest.TestCase):
         sys.stdout = sys.__stdout__
         # Do any other test code (e.g., asserts)
         self.assertEqual(expected_output, captured_output.getvalue())
-    
+
     def test_display_entry_return_only_returns_correct_output(self):
         """Makes sure that the output returned corresponds
         to what was expected"""
         entry = self.create_mixed_test_data()['test_log_entries'][0]
-        
+
         expected_result = ("{}: {} ({}m): {} | {}".format(
             entry['name'],
             entry['date'],
@@ -1370,16 +1370,16 @@ class MenuTests(unittest.TestCase):
         self.menu.previous_result()
         self.assertEqual(self.menu.current_record,
                          current_record_before - 1)
-    
+
     def test_previous_result_returns_correct_menu(self):
         """Make sure that this method returns present_next_result"""
         current_record_before = 1
         self.menu.current_record = current_record_before
-        
+
         result = self.menu.previous_result()
-        
+
         expected_result = self.menu.present_next_result
-        
+
         self.assertEqual(result, expected_result)
 
     # next_result
@@ -1390,16 +1390,16 @@ class MenuTests(unittest.TestCase):
         self.menu.next_result()
         self.assertEqual(self.menu.current_record,
                          current_record_before + 1)
-    
+
     def test_next_result_returns_correct_menu(self):
         """Make sure that this method returns present_next_result"""
         current_record_before = 1
         self.menu.current_record = current_record_before
-        
+
         result = self.menu.next_result()
-        
+
         expected_result = self.menu.present_next_result
-        
+
         self.assertEqual(result, expected_result)
 
     # previous_page
@@ -1413,13 +1413,13 @@ class MenuTests(unittest.TestCase):
         self.menu.previous_page()
         self.assertEqual(self.menu.current_page_start,
                          current_page_start_before - page_offset)
-    
+
     def test_previous_page_returns_correct_menu(self):
         """Make sure that this method returns present_results"""
         current_page_start_before = 1
         self.menu.current_page_start = current_page_start_before
         result = self.menu.previous_page()
-        
+
         expected_result = self.menu.present_results
 
         self.assertEqual(result, expected_result)
@@ -1435,16 +1435,16 @@ class MenuTests(unittest.TestCase):
         self.menu.next_page()
         self.assertEqual(self.menu.current_page_start,
                          current_page_start_before + page_offset)
-    
+
     def test_next_page_returns_correct_menu(self):
         """Make sure that this method returns present_results"""
         current_page_start_before = 1
         self.menu.current_page_start = current_page_start_before
-        
+
         result = self.menu.next_page()
 
         expected_result = self.menu.present_results
-        
+
         self.assertEqual(result, expected_result)
 
     # validate_date_entry
@@ -1463,7 +1463,7 @@ class MenuTests(unittest.TestCase):
         expected_result = (None, date_object)
 
         self.assertEqual(result, expected_result)
-    
+
     def test_validate_date_entry_returns_correct_ValueError(self):
         """Make sure that an invalid iso date returns the appropriate error
         """
@@ -1504,10 +1504,10 @@ class MenuTests(unittest.TestCase):
         self.menu.OPTIONS['date format'] = date_format
 
         user_input = [date_string]
-        
+
         with patch('builtins.input', side_effect=user_input):
             result = self.menu.date_entry()
-        
+
         expected_result = (
             None,
             datetime.datetime.strptime(date_string,
@@ -1515,7 +1515,6 @@ class MenuTests(unittest.TestCase):
         )
 
         self.assertEqual(result, expected_result)
-
 
     # date_to_string
     def test_date_to_string_returns_valid_string(self):
