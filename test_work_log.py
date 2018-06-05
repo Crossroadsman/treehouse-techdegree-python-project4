@@ -1,4 +1,4 @@
-"""Test DB Manager
+"""Test Work Log
 Unit Tests for work_log.py
 
 Created: 2018
@@ -141,6 +141,25 @@ class MenuTests(unittest.TestCase):
 
     # Actual Tests
     # ------------
+
+    # init
+    def test_init_correctly_initialises_menu(self):
+        """Ensure that the menu is properly configured"""
+        initial_options = {
+            'date format': settings.DATE_FORMATS['iso 8601'],
+            'save format (date)': settings.DATE_FORMATS['iso 8601'],
+            'case sensitive search': False,
+            'entries per page': 10,
+            'allow future dates': False,
+            'earliest allowed date': datetime.datetime(1900, 1, 1),
+        }
+        initial_current_record = 0
+        initial_current_page_start = 0
+
+        self.assertEqual(self.menu.OPTIONS, initial_options)
+        self.assertEqual(self.menu.current_record, initial_current_record)
+        self.assertEqual(self.menu.current_page_start, 
+                         initial_current_page_start)
 
     # main_menu
     def test_main_menu_selection_returns_correct_menu(self):
@@ -1271,7 +1290,7 @@ class MenuTests(unittest.TestCase):
         repeat_old_query = self.base_query(test_log_entries[record_index])
 
         self.assertEqual(len(repeat_old_query), 0)   # query should be empty
-
+    
     def test_delete_current_record_returns_the_correct_menu(self):
         """Ensure the correct menu is returned"""
         # create some db records
@@ -1481,13 +1500,32 @@ class MenuTests(unittest.TestCase):
 
         self.assertEqual(result, expected_result)
 
-    def test_validate_date_entry_returns_correct_outOfBounds(self):
+    def test_validate_date_entry_returns_correct_outOfBounds_if_future(self):
         """Make sure that a future date returns the appropriate error
         """
         date_string = "3018-01-21"
         date_format = settings.DATE_FORMATS['iso 8601']
 
         error_text = "dates in the future are not permitted"
+
+        result = self.menu.validate_date_entry(date_string, date_format)
+
+        expected_result = (error_text, None)
+
+        self.assertEqual(result, expected_result)
+    
+    def test_validate_date_entry_returns_correct_outOfBounds_if_past(self):
+        """Make sure that a long past date returns the appropriate error
+        """
+        date_string = "1899-12-12"
+        date_format = settings.DATE_FORMATS['iso 8601']
+
+        error_string = "dates before {} are not permitted"
+        date_fmt = "%Y-%m-%d"
+        earliest_date = self.menu.OPTIONS['earliest allowed date']
+        earliest_date_string = earliest_date.strftime(date_fmt)
+
+        error_text = error_string.format(earliest_date_string)
 
         result = self.menu.validate_date_entry(date_string, date_format)
 

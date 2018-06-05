@@ -498,7 +498,7 @@ class Menu:
         # old_entry = dbm.view_entries
         new_values = {
             'name': username,
-            'date': date,
+            'date': date_string,
             'task_name': task_name,
             'duration': time_spent,
             'notes': notes
@@ -567,11 +567,8 @@ class Menu:
         print(record)
         # load db
         dbm = DBManager()
-        deleted = dbm.delete_entry(record)
-        if deleted:
-            print("Entry deleted")
-        else:
-            print("Entry not deleted")
+        dbm.delete_entry(record)
+        print("Entry deleted")
         return self.main_menu
 
     def delete_current_record(self):
@@ -580,11 +577,8 @@ class Menu:
         record = self.records[match_index]
         # load db
         dbm = DBManager()
-        deleted = dbm.delete_entry(record)
-        if deleted:
-            print("Entry deleted")
-        else:
-            print("Entry not deleted")
+        dbm.delete_entry(record)
+        print("Entry deleted")
         return self.main_menu
 
     # Other UI Methods
@@ -701,10 +695,7 @@ class Menu:
         if target == 'display':
             option = self.OPTIONS['date format']
             string_format = option['datetime format']
-        elif target == 'file':
-            option = self.OPTIONS['save format (date)']
-            string_format = option['datetime format']
-        else:  # unrecognised target, fallback to write mode
+        else:  # 'file' or unrecognised target, fallback to write mode
             option = self.OPTIONS['save format (date)']
             string_format = option['datetime format']
         return date_object.strftime(string_format)
