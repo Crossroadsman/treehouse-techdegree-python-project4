@@ -1,16 +1,21 @@
 Project 4: Work Log + Database
 ==============================
 
-Requirements
-------------
+Requirements for Running the Application
+----------------------------------------
 Uses a virtual environment (included in the project directory under `wl_env`). If using bash can activate the venv by typing:
 ```bash
 . .activate
 ```
 
+Then can run the application by typing:
+```bash
+python3 work_log.py
+```
+
 Status
 ------
-All .py files have been PEP8 validated with pep8online.com.
+All .py files have been PEP8 validated with pep8online.com and have zero errors and zero warnings.
 
 ### Test Coverage ###
 
