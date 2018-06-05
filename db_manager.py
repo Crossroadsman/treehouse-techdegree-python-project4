@@ -5,7 +5,7 @@ All the database-related functionality.
 Communicates with the rest of the application using OrderDicts
 
 Created: 2018
-Last Update: 2018-05-23
+Last Update: 2018-06-05
 Author: Alex Koumparos
 """
 from collections import OrderedDict

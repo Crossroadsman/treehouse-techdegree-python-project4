@@ -2,7 +2,7 @@
 Unit Tests for work_log.py
 
 Created: 2018
-Last Update: 2018-05-30
+Last Update: 2018-06-05
 Author: Alex Koumparos
 """
 import io

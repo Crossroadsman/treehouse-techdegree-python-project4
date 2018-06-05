@@ -2,7 +2,7 @@
 Unit Tests for db_manager.py
 
 Created: 2018
-Last Update: 2018-05-30
+Last Update: 2018-06-05
 Author: Alex Koumparos
 """
 import unittest
@@ -400,29 +400,6 @@ class DBManagerTests(unittest.TestCase):
 
     def tearDown(self):
         self.revert_database()
-
-    # Example tests
-    # -------------
-    '''
-    def test_assertcountequal(self):
-        """This is just a quick illustration of
-        `self.assertCountEqual(a, b)` : check a and b have the same number of
-                                        the same elements, regardless of order
-        """
-        from collections import OrderedDict
-        od = OrderedDict([('name_one', 'alice'), ('name_two', 'bob')])
-        d = {'name_two': 'bob', 'name_one': 'alice'}
-        d2 = {'name_two': 'alice', 'name_one': 'bob'}
-        d3 = {'name_two': 'clarice', 'name_one': 'doug'}
-        # note, it might seem that assertCountEqual() would be the ideal
-        # assert for this test, but it seems that it only looks at keys and
-        # ignores values.
-        # so assertCountEqual() would cause each of the following comparisons
-        # to pass
-        self.assertEqual(od, d)
-        self.assertNotEqual(od, d2)
-        self.assertNotEqual(od, d3)
-    '''
 
     # Actual tests
     # ------------
