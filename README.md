@@ -1,6 +1,27 @@
 Project 4: Work Log + Database
 ==============================
 
+Requirements
+------------
+Uses a virtual environment (included in the directory under `wl_env`). If using bash can activate the venv by typing:
+```bash
+. .activate
+```
+
+Status
+------
+All .py files have been PEP8 validated with pep8online.com.
+
+### Test Coverage ###
+
+File             | Tested in            | Coverage*
+-----------------|----------------------|----------
+`work_log.py`    | `test_work_log.py`   | 85%
+`db_manager.py`  | `test_db_manager.py` | 88%
+`wl_settings.py` | `test_work_log.py`   | 100%
+
+\* according to `coverage report`
+
 Permitted Programming Constructs
 --------------------------------
 ### Everything from Unit1: ###
