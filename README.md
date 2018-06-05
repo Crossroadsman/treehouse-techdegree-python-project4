@@ -3,7 +3,7 @@ Project 4: Work Log + Database
 
 Requirements
 ------------
-Uses a virtual environment (included in the directory under `wl_env`). If using bash can activate the venv by typing:
+Uses a virtual environment (included in the project directory under `wl_env`). If using bash can activate the venv by typing:
 ```bash
 . .activate
 ```
