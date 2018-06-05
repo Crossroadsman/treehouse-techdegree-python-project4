@@ -158,7 +158,7 @@ class MenuTests(unittest.TestCase):
 
         self.assertEqual(self.menu.OPTIONS, initial_options)
         self.assertEqual(self.menu.current_record, initial_current_record)
-        self.assertEqual(self.menu.current_page_start, 
+        self.assertEqual(self.menu.current_page_start,
                          initial_current_page_start)
 
     # main_menu
@@ -1290,7 +1290,7 @@ class MenuTests(unittest.TestCase):
         repeat_old_query = self.base_query(test_log_entries[record_index])
 
         self.assertEqual(len(repeat_old_query), 0)   # query should be empty
-    
+
     def test_delete_current_record_returns_the_correct_menu(self):
         """Ensure the correct menu is returned"""
         # create some db records
@@ -1513,7 +1513,7 @@ class MenuTests(unittest.TestCase):
         expected_result = (error_text, None)
 
         self.assertEqual(result, expected_result)
-    
+
     def test_validate_date_entry_returns_correct_outOfBounds_if_past(self):
         """Make sure that a long past date returns the appropriate error
         """
